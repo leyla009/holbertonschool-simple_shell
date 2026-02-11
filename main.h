@@ -16,11 +16,8 @@
 extern char **environ;
 
 /* Task 1 Prototypes */
-int execute_command(char *command);
+int execute_command(char **argv);
 void display_prompt(void);
 char *read_input(void);
-
-/* Task 2 Prototype */
-int execute_command(char **argv);
 
 #endif /* MAIN_H */
