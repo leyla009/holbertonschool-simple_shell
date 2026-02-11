@@ -10,6 +10,8 @@ int main(void)
 	char *line = NULL;
 	size_t len = 0;
 	ssize_t nread;
+	char *start;
+	char *end;
 
 	while (1)
 	{
@@ -24,20 +26,22 @@ int main(void)
 			free(line);
 			break;
 		}
-		if (line[nread - 1] == '\n')
-			line[nread - 1] = '\0';
-		if (line[0] != '\0')
-			execute_command(line);
 
-		char *start = line;
+		if (nread > 0 && line[nread - 1] == '\n')
+			line[nread - 1] = '\0';
+		
+		start = line;
 		while (*start == ' ')
 			start++;
 
-		char *end = start + strlen(start) - 1;
-		while (end >= start && *end == ' ')
+		if (*start != '\0')
 		{
-			*end = '\0';
-			end--;
+			end = start + strlen(start) - 1;
+			while (end > start && *end == ' ')
+			{
+				*end = '\0';
+				end--;
+			}
 
 		if (*start != '\0')
 			execute_command(start);
