@@ -37,6 +37,18 @@ This file tracks the technical progress, challenges, and solutions encountered d
     3. Reconfigured editor to a tabstop of 8.
 - **Key Learning:** Betty requires strict adherence to tabstops; code inside nested conditionals must land exactly on the next 8-character mark.
 
+### Feb 11, 2026 | Task 2: Advanced Input Parsing & The Space Trap
+- **Objective:** Enable the shell to handle commands with arguments and extra whitespace.
+- **The Discovery (First Checker Run):**
+    - **Issue:** Running `/bin/ls` with surrounding spaces caused "No such file or directory" errors.
+    - **Data:** The checker sent `"/bin/ls\n"`, `" /bin/ls\n"`, and `"/bin/ls \n"`. 
+    - **Result:** My Task 1 logic only handled the first case; the others failed because `execve` treated the spaces as part of the filename.
+- **The Implementation (The Fix):**
+    - **Strategy:** Transitioned from simple newline-stripping to full string tokenization.
+    - **Tool:** Utilized `strtok` to split the input string using `" \t\n"` as delimiters.
+    - **Outcome:** This naturally ignores leading, trailing, and multiple consecutive spaces, isolating only the "words" (tokens) needed for execution.
+- **Key Learning:** Handling a command-line is less about *running* the command and more about *cleaning* the string. Robust parsing is the foundation of a reliable shell.
+
 ---
 
 ## Contribution Tracking
