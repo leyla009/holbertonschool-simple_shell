@@ -55,7 +55,7 @@ This file tracks the technical progress, challenges, and solutions encountered d
 - **Challenge 3: C90 & Header Synchronization**
     - **Issue 1:** `error: ISO C90 forbids mixed declarations`. Fixed by moving `int i`, `char *token`, and `char **argv` to the top of `main`.
     - **Issue 2:** `error: conflicting types for ‘execute_command’`.
-    - **Cause:** `main.h` contained both the old char * and new char ** prototypes.
+    - **Cause:** `main.h` contained both the old `char *` and new `char **` prototypes.
     - **Solution:** Cleaned `main.h` to maintain a "Single Source of Truth," leaving only the pointer-to-pointer signature.
 - **Key Learning:** A shell is essentially a bridge between a human-readable string and a kernel-readable array. The synchronisation between `main.h`, `main.c`, and `exec.c` is the most fragile part of the architecture.
 ---
