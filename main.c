@@ -45,6 +45,8 @@ int main(void)
 
 		if (*start != '\0')
 			execute_command(start);
+		}
 	}
+
 	return (0);
 }
