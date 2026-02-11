@@ -15,9 +15,10 @@
 /* Environment */
 extern char **environ;
 
+/* Function Prototypes */
+
 int execute_command(char **argv);
-void display_prompt(void);
-char *read_input(void);
 char *find_path(char *command);
+char *_getenv(const char *name);
 
 #endif /* MAIN_H */
