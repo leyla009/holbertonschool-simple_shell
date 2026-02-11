@@ -43,14 +43,19 @@ int main(void)
 
 		if (argv[0] != NULL)
 		{
+			char *full_path;
+			
+			if (strcmp(argv[0], "exit") == 0)
+			{
+				free(line);
+				exit(status);
+			}
 			char *full_path = find_path(argv[0]);
 			if (full_path != NULL)
 			{
 				char *temp_cmd = argv[0];
 				argv[0] = full_path;
-				
 				execute_command(argv);
-				
 				argv[0] = temp_cmd;
 				free(full_path);
 			}
