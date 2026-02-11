@@ -1,11 +1,11 @@
 #include "main.h"
-#include <sys/stat.h>
 
 /**
- * find_path - Finds the full path of a command.
- * @command: The command to find (e.g., "ls").
+ * find_path - Finds the full path of a command using the PATH variable.
+ * @command: The command to locate (e.g., "ls").
  *
- * Return: The full path if found, or a copy of command if not.
+ * Return: A dynamically allocated string with the full path,
+ * or NULL if not found or PATH is unset.
  */
 char *find_path(char *command)
 {
@@ -13,24 +13,37 @@ char *find_path(char *command)
 	struct stat st;
 	int cmd_len, dir_len;
 
-	/* If command is already an absolute path, checks it directly */
-	if (stat(command, &st) == 0)
-		return (strdup(command));
+	if (!command)
+		return (NULL);
+
+	if (strchr(command, '/') != NULL)
+	{
+		if (stat(command, &st) == 0)
+			return (strdup(command));
+		return (NULL);
+	}
 
 	path = _getenv("PATH");
-	if (!path)
+	if (!path || strlen(path) == 0)
 		return (NULL);
 
 	path_copy = strdup(path);
+	if (!path_copy)
+		return (NULL);
+
 	cmd_len = strlen(command);
 	token = strtok(path_copy, ":");
 
 	while (token != NULL)
 	{
 		dir_len = strlen(token);
+
 		file_path = malloc(dir_len + cmd_len + 2);
 		if (!file_path)
-			break;
+		{
+			free(path_copy);
+			return (NULL);
+		}
 
 		strcpy(file_path, token);
 		strcat(file_path, "/");
@@ -41,6 +54,7 @@ char *find_path(char *command)
 			free(path_copy);
 			return (file_path);
 		}
+
 		free(file_path);
 		token = strtok(NULL, ":");
 	}
