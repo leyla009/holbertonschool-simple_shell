@@ -37,7 +37,14 @@ This file tracks the technical progress, challenges, and solutions encountered d
     3. Reconfigured editor to a tabstop of 8.
 - **Key Learning:** Betty requires strict adherence to tabstops; code inside nested conditionals must land exactly on the next 8-character mark.
 
-### Feb 11, 2026 | Task 2: Command Line Arguments & Tokenization
+### Feb 11, 2026 | Task 2: Handling the "Space Trap"
+- **Objective:** Fix the bug where commands failed if surrounded by spaces (e.g., `" /bin/ls "`).
+- **Challenge: The Functional Bug (The Space Trap)**
+    - **Issue:** ISO C90 standards forbid mixed declarations. Attempting to fix the logic by declaring variables mid-block introduced compiler errors.
+    - **Solution:** Reorganised `main.c` to declare all variables at the top of the function. Implemented a pointer-based "trim" logic to sanitise input before passing it to the executor.
+- **Key Learning:** In strict C90 (gnu89), the structure of the code is as important as the logic. Every variable must be accounted for before the first line of executable code.
+
+### Feb 11, 2026 | Task 3: Command Line Arguments and Tokenisation
 - **Objective:** Enable the shell to handle commands with options (e.g., `ls -l /var`) and handle inconsistent whitespace.
 - **Challenge 1: The Functional Bug (The Space Trap)**
     - **Issue:** The shell failed when commands had leading or trailing spaces. `execve` was treating the spaces as part of the filename.
@@ -51,7 +58,6 @@ This file tracks the technical progress, challenges, and solutions encountered d
     - **Cause:** `main.h` contained both the old char * and new char ** prototypes.
     - **Solution:** Cleaned `main.h` to maintain a "Single Source of Truth," leaving only the pointer-to-pointer signature.
 - **Key Learning:** A shell is essentially a bridge between a human-readable string and a kernel-readable array. The synchronisation between `main.h`, `main.c`, and `exec.c` is the most fragile part of the architecture.
-
 ---
 
 ## Contribution Tracking
