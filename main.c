@@ -13,7 +13,7 @@ int main(void)
 	char *token;
 	char *argv[32];
 	int i;
-
+	int status = 0;
 
 	while (1)
 	{
