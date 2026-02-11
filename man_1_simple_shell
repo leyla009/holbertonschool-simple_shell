@@ -1,0 +1,38 @@
+.TH SIMPLE_SHELL 1 "FEBRUARY 2026" "Shell Project" "Custom Shell Manual" "Version 1.0"
+
+.SH NAME
+hsh \- a custom implementation of the UNIX command line interpreter
+
+.SH SYNOPSIS
+.B ./hsh
+[no options]
+
+.SH DESCRIPTION
+.B hsh
+is a command language interpreter that executes commands read from the standard input or from a terminal. It is a simplified version of the Thompson shell.
+.PP
+The shell performs the following actions:
+.IP 1.
+Displays a prompt and waits for user input.
+.IP 2.
+Parses the input into a command and its arguments.
+.IP 3.
+Locates the command in the PATH environment variable if a full path is not provided.
+.IP 4.
+Executes the command in a child process.
+
+.SH BUILT-IN COMMANDS
+The current version supports the following built-ins:
+.TP
+.B exit
+Terminates the shell.
+.TP
+.B env
+Prints the current environment variables.
+
+.SH SEE ALSO
+sh(1), bash(1), execve(2), fork(2), wait(2)
+
+.SH AUTHORS
+Leyla Khaspoladova <leyla.khaspolad@gmail.com>
+David Abdurahmanov <@mail.com>
