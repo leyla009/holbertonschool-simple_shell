@@ -24,6 +24,10 @@ int main(void)
 			free(line);
 			break;
 		}
+		if (line[nread - 1] == '\n')
+			line[nread - 1] = '\0';
+		if (line[0] != '\0')
+			execute_command(line);
 	}
 	return (0);
 }
