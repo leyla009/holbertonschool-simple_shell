@@ -10,7 +10,7 @@
     <br>
     <a href="#tech-stack">Tech stack</a>
     <br>
-    <a href="#techincal-specifications">Techincal Specifications</a>
+    <a href="#technical-specifications">Technical Specifications</a>
     <br>
     <a href="#file-structure">File Structure</a>
     <br>
@@ -40,7 +40,7 @@ The program reads commands from either the standard input or a file and executes
     <img src="https://img.shields.io/badge/VIM-019733?logo=vim&logoColor=white&style=for-the-badge" alt="VIM badge">
 </p>
 
-## <span id="techical-specifications">Techical Specifications</span>
+## <span id="technical-specifications">Technical Specifications</span>
 ### Compilation
 The shell is compiled using the following flags to ensure code quality and standard compliance:
 ```bash
