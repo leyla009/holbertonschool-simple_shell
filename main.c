@@ -13,20 +13,17 @@ int main(void)
 
     while (1)
     {
-        if (isatty(STDIN_FILENO))
-            printf("($) ");
+	if (isatty(STDIN_FILENO))
+	    printf("($) ");
 
-        nread = getline(&line, &len, stdin);
-        if (nread == -1) /* Handle EOF (Ctrl+D) */
-        {
-            if (isatty(STDIN_FILENO))
-                printf("\n");
-            free(line);
-            break;
-        }
-
-        /* Logic to remove newline and call executor will go here */
-        
+	nread = getline(&line, &len, stdin);
+	if (nread == -1) /* Handle EOF (Ctrl+D) */
+	{
+	    if (isatty(STDIN_FILENO))
+		printf("\n");
+	    free(line);
+	    break;
+	}
     }
     return (0);
 }
