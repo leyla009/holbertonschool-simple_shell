@@ -57,6 +57,7 @@ int main(void)
 			else
 			{
 				fprintf(stderr, "./hsh: 1: %s: not found\n", argv[0]);
+				status = 127;
 			}
 		}
 
