@@ -55,9 +55,8 @@ int main(void)
 			if (full_path != NULL)
 			{
 				char *temp_cmd = argv[0];
-
 				argv[0] = full_path;
-				execute_command(argv);
+				status = execute_command(argv);
 				argv[0] = temp_cmd;
 				free(full_path);
 			}

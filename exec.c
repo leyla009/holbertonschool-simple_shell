@@ -8,27 +8,22 @@
  */
 int execute_command(char **argv)
 {
-	pid_t child_pid;
+       	pid_t child_pid;
 	int status;
-
+	
 	child_pid = fork();
 	if (child_pid == -1)
-	{
-		perror("Fork Error");
 		return (1);
-	}
-
 	if (child_pid == 0)
 	{
 		if (execve(argv[0], argv, environ) == -1)
-		{
-			perror("./shell");
-			exit(127);
-		}
+			exit(1);
 	}
 	else
 	{
 		wait(&status);
+		if (WIFEXITED(status))
+			return (WEXITSTATUS(status));
 	}
 
 	return (0);
