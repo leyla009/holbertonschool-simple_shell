@@ -7,23 +7,23 @@
  */
 int main(void)
 {
-    char *line = NULL;
-    size_t len = 0;
-    ssize_t nread;
+	char *line = NULL;
+	size_t len = 0;
+	ssize_t nread;
 
-    while (1)
-    {
-	if (isatty(STDIN_FILENO))
-	    printf("($) ");
-
-	nread = getline(&line, &len, stdin);
-	if (nread == -1) /* Handle EOF (Ctrl+D) */
+	while (1)
 	{
-	    if (isatty(STDIN_FILENO))
-		printf("\n");
-	    free(line);
-	    break;
+		if (isatty(STDIN_FILENO))
+			printf("($) ");
+
+		nread = getline(&line, &len, stdin);
+		if (nread == -1)
+		{
+			if (isatty(STDIN_FILENO))
+				printf("\n");
+			free(line);
+			break;
+		}
 	}
-    }
-    return (0);
+	return (0);
 }
