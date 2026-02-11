@@ -28,6 +28,19 @@ int main(void)
 			line[nread - 1] = '\0';
 		if (line[0] != '\0')
 			execute_command(line);
+
+		char *start = line;
+		while (*start == ' ')
+			start++;
+
+		char *end = start + strlen(start) - 1;
+		while (end >= start && *end == ' ')
+		{
+			*end = '\0';
+			end--;
+
+		if (*start != '\0')
+			execute_command(start);
 	}
 	return (0);
 }
