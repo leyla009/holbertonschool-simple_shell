@@ -37,21 +37,20 @@ This file tracks the technical progress, challenges, and solutions encountered d
     3. Reconfigured editor to a tabstop of 8.
 - **Key Learning:** Betty requires strict adherence to tabstops; code inside nested conditionals must land exactly on the next 8-character mark.
 
-### Feb 11, 2026 | Task 2: Advanced Input Parsing & The "Space Trap"
-- **Objective:** Enable the shell to handle commands with arguments and survive inconsistent whitespace (e.g., "  /bin/ls  ").
+### Feb 11, 2026 | Task 2: Command Line Arguments & Tokenization
+- **Objective:** Enable the shell to handle commands with options (e.g., `ls -l /var`) and handle inconsistent whitespace.
 - **Challenge 1: The Functional Bug (The Space Trap)**
-    - **Issue:** The automated checker failed when commands were surrounded by spaces.
-    - **Symptom:** `execve` returned "No such file or directory" because it was trying to execute the literal string `" /bin/ls "` instead of the command `/bin/ls`.
-    - **Solution:** Implemented a pointer-based "trim" logic to skip leading spaces and null-terminate trailing spaces.
-- **Challenge 2: The Compilation Wall (C90 Compliance)**
-    - **Issue:** GCC reported `error: ISO C90 forbids mixed declarations and code`.
-    - **Cause:** Variables like `char *start` were declared in the middle of the function logic.
-    - **Solution:** Moved all variable declarations to the very top of the `main` block, satisfying the `-std=gnu89` strict requirements.
-- **Challenge 3: Syntax Integrity**
-    - **Issue:** `error: expected declaration or statement at end of input`.
-    - **Cause:** Mismatched curly braces `{}` within the nested `while` and `if` blocks.
-    - **Solution:** Performed a manual brace-audit to ensure every opened block was correctly closed, allowing the compiler to reach the final `return (0)`.
-- **Key Learning:** In C90, the "Scope" of a variable is as important as its logic. Proper indentation and brace-tracking are the only things standing between code and a compiler crash.
+    - **Issue:** The shell failed when commands had leading or trailing spaces. `execve` was treating the spaces as part of the filename.
+    - **Solution:** Moved from simple newline stripping to full string tokenisation using `strtok`. This automatically treats multiple spaces as a single delimiter.
+- **Challenge 2: Argument Vector (`argv`) Implementation**
+    - **Issue:** `execve` requires an array of strings (`char **`), but `getline` provides a single buffer.
+    - **Solution:** Created a `char *argv[32]` array and used a `while` loop with `strtok(NULL, " \t\n")` to populate it. Added a mandatory `NULL` terminator at the end of the array.
+- **Challenge 3: C90 & Header Synchronization**
+    - **Issue 1:** `error: ISO C90 forbids mixed declarations`. Fixed by moving `int i`, `char *token`, and `char **argv` to the top of `main`.
+    - **Issue 2:** `error: conflicting types for ‘execute_command’`.
+    - **Cause:** `main.h` contained both the old char * and new char ** prototypes.
+    - **Solution:** Cleaned `main.h` to maintain a "Single Source of Truth," leaving only the pointer-to-pointer signature.
+- **Key Learning:** A shell is essentially a bridge between a human-readable string and a kernel-readable array. The synchronisation between `main.h`, `main.c`, and `exec.c` is the most fragile part of the architecture.
 
 ---
 
@@ -71,3 +70,7 @@ This file tracks the technical progress, challenges, and solutions encountered d
 - **Tools:** `valgrind` (Memory), `betty` (Style)
 - **Error Handling:** `perror` for system call failures.
 - **Memory Management:** `getline` with explicit `free()` calls to maintain a zero-leak status.
+- **Parsing:** `strtok` with delimiters `" \t\n\r\a"`.
+- **Process Management:** `fork()` -> `execve()` -> `wait()`.
+- **Compliance:** ANSI C (C90) / gnu89.
+- **Memory Safety:** Verified 0 leaks via Valgrind.
