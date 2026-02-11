@@ -10,8 +10,10 @@ int main(void)
 	char *line = NULL;
 	size_t len = 0;
 	ssize_t nread;
-	char *start;
-	char *end;
+	char *token;
+	char *argv[32];
+	int i;
+
 
 	while (1)
 	{
@@ -27,25 +29,23 @@ int main(void)
 			break;
 		}
 
-		if (nread > 0 && line[nread - 1] == '\n')
-			line[nread - 1] = '\0';
-		
-		start = line;
-		while (*start == ' ')
-			start++;
+		i = 0;
+		token = strtok(line, " \t\n");
 
-		if (*start != '\0')
+		while (token != NULL && i < 31)
 		{
-			end = start + strlen(start) - 1;
-			while (end > start && *end == ' ')
-			{
-				*end = '\0';
-				end--;
-			}
-
-		if (*start != '\0')
-			execute_command(start);
+			argv[i] = token;
+			token = strtok(NULL, " \t\n");
+			i++;
 		}
+
+		argv[i] = NULL;
+
+		if (argv[0] != NULL)
+		{
+			execute_command(argv);
+		}
+
 	}
 
 	return (0);

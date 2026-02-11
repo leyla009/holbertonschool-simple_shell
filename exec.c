@@ -1,40 +1,33 @@
 #include "main.h"
 
 /**
- * execute_command - Forks a process and executes a command.
- * @command: The full path to the executable.
+ * execute_command - Forks a process and executes a command with arguments.
+ * @argv: An array of strings (pointers) containing the command and arguments.
  *
- * Return: 0 on success, 1 on failure.
+ * Return: 0 on success, 1 if fork fails.
  */
-int execute_command(char *command)
+int execute_command(char **argv)
 {
 	pid_t child_pid;
 	int status;
-	char *args[2];
-
-	/* Prepare arguments for execve: [0] is command, [1] is NULL */
-	args[0] = command;
-	args[1] = NULL;
 
 	child_pid = fork();
 	if (child_pid == -1)
 	{
-		perror("Error");
+		perror("Fork Error");
 		return (1);
 	}
 
 	if (child_pid == 0)
 	{
-		/* We are in the Child Process */
-		if (execve(command, args, environ) == -1)
+		if (execve(argv[0], argv, environ) == -1)
 		{
 			perror("./shell");
-			exit(1);
+			exit(127);
 		}
 	}
 	else
 	{
-		/* We are in the Parent Process */
 		wait(&status);
 	}
 
