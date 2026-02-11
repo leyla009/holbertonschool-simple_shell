@@ -99,15 +99,6 @@ This file tracks the technical progress, challenges, and solutions encountered d
 - **Solution:** Relocated the `int status` declaration to the top of the `main` function alongside `line` and `argv`.
 - **Key Learning:** Compiler errors like `undeclared (first use in this function)` are often a reminder of strict C90 variable placement rules, even if the logic itself is sound.
 
-### Feb 11, 2026 | Task 4: Path Resolution (Simple Shell 0.3) [SUMMARY]
-- **Objective:** Enable the shell to execute commands without requiring absolute paths (e.g., allow `ls` instead of `/bin/ls`) by searching the `PATH` environment variable.
-- **Key Challenges & Solutions:**
-- **The Forbidden `getenv`:** Since the standard library getenv is restricted, I implemented a custom `_getenv` function to manually traverse the `char **environ` array.
-- **PATH Environment Edge Cases:** Fixed a critical bug where the shell was incorrectly searching the current directory when the `PATH` variable was missing or renamed (e.g., `PATH1`).
-- **The "No-Fork" Requirement:** Implemented a guard to ensure `fork()` and `execute_command()` are only called if the binary is verified to exist using `stat()`.
-- **Memory Management:** Managed dynamic memory for `path_copy` and `file_path` to prevent leaks during tokenisation, ensuring every `malloc` has a corresponding `free`.
-- **Exit Status Compliance:** Standardised the shell to return an exit status of 127 when a command is not found, matching the behaviour of /bin/sh.
-
 ### Feb 11, 2026 | Task 4: Strict PATH Resolution logic
 - **Objective:** Correct behaviour when the `PATH` environment variable is unset.
 - **Challenge:** The shell was incorrectly executing local binaries when `PATH` was missing, failing the `path_path1_var` test case which expects a 'not found' error.
@@ -128,6 +119,15 @@ This file tracks the technical progress, challenges, and solutions encountered d
     - Added a safety check to return `NULL` if `_getenv("PATH")` fails.
     - Maintained `cmd_len` and `dir_len` for efficient `malloc` calculations.
 - **Result:** Now passes the `path_path1_var` checker test by correctly failing to find commands when the `PATH` variable is specifically absent.
+
+### Feb 11, 2026 | Task 4: Path Resolution (Simple Shell 0.3) [SUMMARY]
+- **Objective:** Enable the shell to execute commands without requiring absolute paths (e.g., allow `ls` instead of `/bin/ls`) by searching the `PATH` environment variable.
+- **Key Challenges & Solutions:**
+- **The Forbidden `getenv`:** Since the standard library getenv is restricted, I implemented a custom `_getenv` function to manually traverse the `char **environ` array.
+- **PATH Environment Edge Cases:** Fixed a critical bug where the shell was incorrectly searching the current directory when the `PATH` variable was missing or renamed (e.g., `PATH1`).
+- **The "No-Fork" Requirement:** Implemented a guard to ensure `fork()` and `execute_command()` are only called if the binary is verified to exist using `stat()`.
+- **Memory Management:** Managed dynamic memory for `path_copy` and `file_path` to prevent leaks during tokenisation, ensuring every `malloc` has a corresponding `free`.
+- **Exit Status Compliance:** Standardised the shell to return an exit status of 127 when a command is not found, matching the behaviour of /bin/sh.
 
 ## Architecture Changes
 - `_getenv.c`: Manually scans the environment for a specific key.
