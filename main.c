@@ -43,10 +43,22 @@ int main(void)
 
 		if (argv[0] != NULL)
 		{
-			execute_command(argv);
+			char *full_path = find_path(argv[0]);
+			if (full_path != NULL)
+			{
+				char *temp_cmd = argv[0];
+				argv[0] = full_path;
+				
+				execute_command(argv);
+				
+				argv[0] = temp_cmd;
+				free(full_path);
+			}
+			else
+			{
+				fprintf(stderr, "./hsh: 1: %s: not found\n", argv[0]);
+			}
 		}
-
-	}
 
 	return (0);
 }
