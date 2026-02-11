@@ -20,10 +20,10 @@ This file tracks the technical progress, challenges, and solutions encountered d
 ### Feb 11, 2026 | Task 0: Manual Page Construction
 - **Objective:** Create a UNIX-style man page (`man_1_simple_shell`).
 - **Challenge:** The system environment was minimized and the `man` command was missing.
-- **Solution:** Utilized `nroff -man ./man_1_simple_shell | less` to preview the ROFF formatting without needing a full system restore.
+- **Solution:** Utilised `nroff -man ./man_1_simple_shell | less` to preview the ROFF formatting without needing a full system restore.
 - **Key Learning:** Learned the ROFF macro language (`.SH`, `.IP`, `.TP`) for professional documentation.
 
-### Feb 11, 2026 | Task 1: Main Loop Initialization
+### Feb 11, 2026 | Task 1: Main Loop Initialisation
 - **Objective:** Create the "Heart" of the shell in `main.c`.
 - **Challenge:** Handling the End-of-File (EOF) condition to prevent infinite loops.
 - **Solution:** Used the return value of `getline`. When `nread == -1`, the shell breaks the loop and frees memory.
@@ -34,7 +34,7 @@ This file tracks the technical progress, challenges, and solutions encountered d
 - **Challenge:** 13 errors and 20 warnings regarding indentation and spaces.
 - **Solution:** 1. Used `unexpand -t 8` to convert spaces to hard tabs.
     2. Used `sed` to strip trailing whitespaces.
-    3. Reconfigured editor to a tabstop of 8.
+    3. Reconfigured the editor to a tabstop of 8.
 - **Key Learning:** Betty requires strict adherence to tabstops; code inside nested conditionals must land exactly on the next 8-character mark.
 
 ### Feb 11, 2026 | Task 2: Handling the "Space Trap"
@@ -63,12 +63,12 @@ This file tracks the technical progress, challenges, and solutions encountered d
 - **Objective:** Allow the shell to execute commands without requiring absolute paths (e.g., `ls` instead of `/bin/ls`).
 - **Challenge:** The `execve` system call does not automatically search the PATH. When the user inputs `ls`, the shell currently fails because it only looks in the current working directory.
 - **Planned Solution:** 1. Retrieve the `PATH` string from the `environ` global variable.
-    2. Tokenize the `PATH` into individual directory strings using `:` as a delimiter.
+    2. Tokenise the `PATH` into individual directory strings using `:` as a delimiter.
     3. For each directory, prepend it to the user's command (e.g., `/bin/` + `ls`).
     4. Use `stat()` to check if the resulting path is a valid executable.
 - **Constraint:** Must not use `getenv()`; must manually iterate through `environ`.
 ### Feb 11, 2026 | Task 4: Header Refactoring
-- **Objective:** Clean up legacy code and synchronize prototypes for PATH resolution.
+- **Objective:** Clean up legacy code and synchronise prototypes for PATH resolution.
 - **Action:** Removed `display_prompt` and `read_input` functions.
 - **Reasoning:** Simplified the main loop logic to improve readability and ensure Betty compliance. Consolidating logic inside the main loop reduces the overhead of passing multiple pointers between small helper functions.
 - **Result:** Successfully resolved "conflicting types" and "implicit declaration" errors.
@@ -78,7 +78,7 @@ This file tracks the technical progress, challenges, and solutions encountered d
 - **Challenge:** Intercepting the command string to resolve its location without breaking the existing argv structure.
 - **Solution:** Modified the main loop to call `find_path` immediately after tokenization. 
     - If a path is found: `argv[0]` is updated, `execute_command` is called, and the path is freed.
-    - If not found: An error message is printed to `stderr` and no fork occurs.
+    - If not found: An error message is printed to `stderr`, and no fork occurs.
 - **Result:** The shell now behaves like a real sh/bash instance, resolving paths dynamically.
 
 ### Feb 11, 2026 | Task 4: Syntax Correction & Scope Resolution
@@ -134,10 +134,29 @@ This file tracks the technical progress, challenges, and solutions encountered d
 - `find_path.c`: Tokenises the PATH string and uses `stat()` to validate command locations.
 - `main.h`: Synchronised with new prototypes to avoid "implicit declaration" warnings under C90.
 - `main.c`: Refactored the loop to intercept commands and resolve paths before forking.
+
+### Feb 12, 2026 | Task 5: Built-in 'exit' Implementation
+- **Objective:** Implement a way for the user to terminate the shell session gracefully.
+- **Challenge:** Distinguishing between built-in commands and external binaries. Built-ins must be executed in the parent process.
+- **Solution:** Added a `strcmp` check at the start of the execution logic. If the input is "exit", the shell cleans up its primary memory buffers and calls the `exit()` system call.
+**Key Learning:** Built-ins like `exit` or `cd` cannot be external programs because they need to modify the state of the shell process itself.
+
+### Feb 12, 2026 | Task 5: C90 Scope Compliance
+- **Issue:** `redeclaration of ‘full_path’` and `mixed declarations and code` errors.
+- **Root Cause:** In the C90 standard, variables must be declared at the very beginning of a block (immediately after a `{`). I had an executable `if` statement followed by a new variable declaration.
+- **Solution:** Moved `char *full_path;` to the top of the `if (argv[0] != NULL)` block and changed the initialisation line to a simple assignment (`full_path = ...`).
+**Key Learning:** C90 is much less flexible than modern C (C99/C11). The "Declaration -> Logic" sequence is mandatory.
+
+### Feb 12, 2026 | Task 5: Exit Status Synchronisation
+- **Issue:** Shell exiting with code 0 instead of the exit code of the last failed command.
+- **Problem:** The `execute_command` function was forking and waiting, but the exit status of the child was being lost in the parent process.
+- **Solution:** Modified `execute_command` to return the result of `WEXITSTATUS(status)`. Updated the main loop to assign this return value to the global `status` variable.
+**Result:** When `/bin/ls` fails with status 2, the shell now correctly exits with status 2 when the `exit` command is called.
+
 ---
 
 ## Contribution Tracking
-*Updated: Feb 11, 2026*
+*Updated: Feb 12, 2026*
 
 | Contributor | Roles | Focus Area |
 | :--- | :--- | :--- |
