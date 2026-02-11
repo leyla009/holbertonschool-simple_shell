@@ -15,7 +15,7 @@ This file tracks the technical progress, challenges, and solutions encountered d
 - **Objective:** Establish the project repository, README, and AUTHORS.
 - **Challenge:** Divergent branches error when pushing to GitHub after editing the README online.
 - **Solution:** Configured Git to use the merge strategy (`git config pull.rebase false`) to reconcile local and remote histories.
-- **Key Learning:** Always `git pull` before starting local work to stay synchronized.
+- **Key Learning:** Always `git pull` before starting local work to stay synchronised.
 
 ### Feb 11, 2026 | Task 0: Manual Page Construction
 - **Objective:** Create a UNIX-style man page (`man_1_simple_shell`).
@@ -58,6 +58,82 @@ This file tracks the technical progress, challenges, and solutions encountered d
     - **Cause:** `main.h` contained both the old `char *` and new `char **` prototypes.
     - **Solution:** Cleaned `main.h` to maintain a "Single Source of Truth," leaving only the pointer-to-pointer signature.
 - **Key Learning:** A shell is essentially a bridge between a human-readable string and a kernel-readable array. The synchronisation between `main.h`, `main.c`, and `exec.c` is the most fragile part of the architecture.
+
+### Feb 11, 2026 | Task 4: Path Resolution (Simple Shell 0.3)
+- **Objective:** Allow the shell to execute commands without requiring absolute paths (e.g., `ls` instead of `/bin/ls`).
+- **Challenge:** The `execve` system call does not automatically search the PATH. When the user inputs `ls`, the shell currently fails because it only looks in the current working directory.
+- **Planned Solution:** 1. Retrieve the `PATH` string from the `environ` global variable.
+    2. Tokenize the `PATH` into individual directory strings using `:` as a delimiter.
+    3. For each directory, prepend it to the user's command (e.g., `/bin/` + `ls`).
+    4. Use `stat()` to check if the resulting path is a valid executable.
+- **Constraint:** Must not use `getenv()`; must manually iterate through `environ`.
+### Feb 11, 2026 | Task 4: Header Refactoring
+- **Objective:** Clean up legacy code and synchronize prototypes for PATH resolution.
+- **Action:** Removed `display_prompt` and `read_input` functions.
+- **Reasoning:** Simplified the main loop logic to improve readability and ensure Betty compliance. Consolidating logic inside the main loop reduces the overhead of passing multiple pointers between small helper functions.
+- **Result:** Successfully resolved "conflicting types" and "implicit declaration" errors.
+
+### Feb 11, 2026 | Task 4: PATH Integration & Execution Guard
+- **Objective:** Enable the shell to handle simple commands (ls) and prevent unnecessary forks.
+- **Challenge:** Intercepting the command string to resolve its location without breaking the existing argv structure.
+- **Solution:** Modified the main loop to call `find_path` immediately after tokenization. 
+    - If a path is found: `argv[0]` is updated, `execute_command` is called, and the path is freed.
+    - If not found: An error message is printed to `stderr` and no fork occurs.
+- **Result:** The shell now behaves like a real sh/bash instance, resolving paths dynamically.
+
+### Feb 11, 2026 | Task 4: Syntax Correction & Scope Resolution
+- **Objective:** Resolve compilation errors in `main.c` related to block scoping.
+- **Challenge:** Encountered `error: expected declaration or statement at end of input`. This was caused by an imbalance in curly braces after nesting the PATH resolution logic.
+- **Solution:** Performed a manual audit of the control flow. Closed the `while` loop properly and ensured the `main` function returns `0` to satisfy the `int` return type.
+- **Key Learning:** Deeply nested `if-else` blocks in C require strict attention to indentation and brace matching, especially when adhering to C90 standards.
+
+### Feb 11, 2026 | Task 4: Final Compilation and Return Logic
+- **Objective:** Resolve the `control reaches end of non-void function` compiler error.
+- **Challenge:** Even though the shell logic exists within an infinite loop, the C90 standard requires a guaranteed return path for functions declared with a non-void return type.
+- **Solution:** Appended `return (0);` at the end of the `main` function scope. This ensures that if the loop ever terminates (e.g., EOF/Ctrl+D), the process exits with a success status.
+- **Result:** Code now compiles cleanly with `-Wall -Werror -Wextra -pedantic`.
+
+### Feb 11, 2026 | Task 4: Variable Scoping and Exit Codes
+- **Objective:** Fix "undeclared identifier" error for the status variable.
+- **Challenge:** Under C90 standards, variables must be declared at the beginning of the block. Adding `status` in the middle of the logic caused a compilation failure.
+- **Solution:** Relocated the `int status` declaration to the top of the `main` function alongside `line` and `argv`.
+- **Key Learning:** Compiler errors like `undeclared (first use in this function)` are often a reminder of strict C90 variable placement rules, even if the logic itself is sound.
+
+### Feb 11, 2026 | Task 4: Path Resolution (Simple Shell 0.3) [SUMMARY]
+- **Objective:** Enable the shell to execute commands without requiring absolute paths (e.g., allow `ls` instead of `/bin/ls`) by searching the `PATH` environment variable.
+- **Key Challenges & Solutions:**
+- **The Forbidden `getenv`:** Since the standard library getenv is restricted, I implemented a custom `_getenv` function to manually traverse the `char **environ` array.
+- **PATH Environment Edge Cases:** Fixed a critical bug where the shell was incorrectly searching the current directory when the `PATH` variable was missing or renamed (e.g., `PATH1`).
+- **The "No-Fork" Requirement:** Implemented a guard to ensure `fork()` and `execute_command()` are only called if the binary is verified to exist using `stat()`.
+- **Memory Management:** Managed dynamic memory for `path_copy` and `file_path` to prevent leaks during tokenisation, ensuring every `malloc` has a corresponding `free`.
+- **Exit Status Compliance:** Standardised the shell to return an exit status of 127 when a command is not found, matching the behaviour of /bin/sh.
+
+### Feb 11, 2026 | Task 4: Strict PATH Resolution logic
+- **Objective:** Correct behaviour when the `PATH` environment variable is unset.
+- **Challenge:** The shell was incorrectly executing local binaries when `PATH` was missing, failing the `path_path1_var` test case which expects a 'not found' error.
+- **Solution:** - Implemented a check using `strchr` to see if a command is a path (contains `/`).
+    - If no slash is present and `PATH` is NULL, the search immediately fails.
+    - This prevents the shell from accidentally finding binaries in the current directory unless explicitly invoked with `./`.
+- **Result:** Shell now correctly returns 127 and the 'not found' error message when `PATH` is absent from the environment.
+
+### Feb 11, 2026 | Task 4: Variable Audit and Optimisation
+- **Objective:** Ensure all declared variables are utilised to maintain clean code and Betty compliance.
+- **Action:** Audited `find_path.c` and `main.c` for unused variables like `cmd_len` or `dir_len`.
+- **Reasoning:** Unused variables increase the memory footprint of the stack frame unnecessarily and trigger warnings in strict compilation environments. 
+- **Result:** Streamlined local variable declarations, ensuring every `int` and `char *` serves a functional purpose in the PATH search algorithm.
+### Feb 11, 2026 | Task 4: Robust Path Resolution
+- **Objective:** Fix edge cases for missing PATH and local execution.
+- **Challenge:** The shell was finding local files even when PATH was missing, which is incorrect behaviour for a simple shell.
+- **Solution:** - Added a check for `/` in the command string to handle absolute/relative paths immediately.
+    - Added a safety check to return `NULL` if `_getenv("PATH")` fails.
+    - Maintained `cmd_len` and `dir_len` for efficient `malloc` calculations.
+- **Result:** Now passes the `path_path1_var` checker test by correctly failing to find commands when the `PATH` variable is specifically absent.
+
+## Architecture Changes
+- `_getenv.c`: Manually scans the environment for a specific key.
+- `find_path.c`: Tokenises the PATH string and uses `stat()` to validate command locations.
+- `main.h`: Synchronised with new prototypes to avoid "implicit declaration" warnings under C90.
+- `main.c`: Refactored the loop to intercept commands and resolve paths before forking.
 ---
 
 ## Contribution Tracking
