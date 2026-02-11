@@ -15,9 +15,9 @@
 /* Environment */
 extern char **environ;
 
-/* Task 1 Prototypes */
 int execute_command(char **argv);
 void display_prompt(void);
 char *read_input(void);
+char *find_path(char *command);
 
 #endif /* MAIN_H */
