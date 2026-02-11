@@ -50,7 +50,7 @@ int main(void)
 				free(line);
 				exit(status);
 			}
-			char *full_path = find_path(argv[0]);
+
 			if (full_path != NULL)
 			{
 				char *temp_cmd = argv[0];
