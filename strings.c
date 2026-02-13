@@ -6,14 +6,21 @@
  * @s2: string 2
  * Return: difference
  */
-int _strcmp(char *s1, char *s2)
+
+int _strncmp(char *s1, char *s2, size_t n)
 {
-	while (*s1 && *s2 && *s1 == *s2)
+	size_t i;
+
+	for (i = 0; i < n && s1[i] && s2[i]; i++)
 	{
-		s1++;
-		s2++;
+		if (s1[i] != s2[i])
+			return (s1[i] - s2[i]);
 	}
-	return (*s1 - *s2);
+
+	if (i == n)
+		return (0);
+
+	return (s1[i] - s2[i]);
 }
 
 /**
