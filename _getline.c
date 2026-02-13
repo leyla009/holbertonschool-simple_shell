@@ -34,7 +34,7 @@ ssize_t _getline(char **lineptr, size_t *n, FILE *stream)
         /* If buffer is empty, read more from the file descriptor */
         if (pos >= n_chars)
         {
-            n_chars = read(fileno(stream), buffer, BUF_SIZE);
+            n_chars = read(STDIN_FILENO, buffer, BUF_SIZE);
             pos = 0;
             if (n_chars <= 0) /* EOF or Error */
                 return (-1);
