@@ -50,6 +50,18 @@ int main(void)
 				exit(status);
 			}
 
+			if (strcmp(argv[0], "env") == 0)
+			{
+				int i = 0;
+				while (environ[i])
+				{
+					printf("%s\n", environ[i]);
+					i++;
+				}
+				status = 0;
+				continue;
+			}
+
 			full_path = find_path(argv[0]);
 
 			if (full_path != NULL)
