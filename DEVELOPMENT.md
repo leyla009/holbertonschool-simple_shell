@@ -153,10 +153,25 @@ This file tracks the technical progress, challenges, and solutions encountered d
 - **Solution:** Modified `execute_command` to return the result of `WEXITSTATUS(status)`. Updated the main loop to assign this return value to the global `status` variable.
 **Result:** When `/bin/ls` fails with status 2, the shell now correctly exits with status 2 when the `exit` command is called.
 
+### Feb 13, 2026 | Task 6: Environment Built-in (Simple Shell 1.0)
+- **Objective:** Implement the env built-in command to display all current environment variables, providing the user with a snapshot of the shell's configuration.
+- **Key Challenges & Solutions:**
+- **Global Variable Access:** Used the `extern char **environ` global variable. Since this isn't provided in a header file by default, declaring it as `extern` was necessary to link to the environment array provided by the system.
+- **Loop Termination:** Handled the `environ` array as a NULL-terminated list of strings. The loop continues until it hits the `NULL` pointer, ensuring all variables are printed without overflowing memory.
+- **Built-in Priority:** Integrated the `env` check immediately after the `exit` check. This ensures that the shell doesn't attempt to search the `PATH` for an external "env" binary, which improves performance and adheres to built-in logic standards.
+- **Key Learning:** Understanding that environ is a NULL-terminated array of strings, similar to argv, but provided by the OS to every process.
+
+### Logic Flow:
+1. User inputs `env`.
+2. `strtok` parses the command.
+3. The shell compares `argv[0]` to "`env`".
+4. If matched, the shell iterates through `environ[i]` and prints each string followed by `\n`.
+5. The shell resets the `status` to `0` and returns to the prompt.
+
 ---
 
 ## Contribution Tracking
-*Updated: Feb 12, 2026*
+*Updated: Feb 13, 2026*
 
 | Contributor | Roles | Focus Area |
 | :--- | :--- | :--- |
