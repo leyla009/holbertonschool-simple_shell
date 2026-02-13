@@ -20,7 +20,7 @@ char *_getenv(const char *name)
 	for (i = 0; environ[i] != NULL; i++)
 	{
 		/* Checks if current env string starts with 'name=' */
-		if (strncmp(environ[i], name, len) == 0 && environ[i][len] == '=')
+		if (_strncmp(environ[i], name, len) == 0 && environ[i][len] == '=')
 		{
 			/* Returns the string starting after the '=' */
 			return (environ[i] + len + 1);
