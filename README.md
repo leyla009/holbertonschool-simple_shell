@@ -16,7 +16,7 @@
     <br>
     <a href="#usage">Usage</a>
     <br> 
-    <a href="#authors">Authors</a>
+    <a href="#author">Author</a>
 </details>
 
 ## <span id="overview">Overview</span>
@@ -80,10 +80,8 @@ $ echo "/bin/ls" | ./hsh
 main.c  main.h  exec.c  hsh
 ```
 
-## <span id="authors">Authors</span>
+## <span id="author">Author</span>
 
 **Leyla Khaspoladova**
-- GitHub: [@leyla009](https://github.com/leyla009)
+GitHub: [@leyla009](https://github.com/leyla009)
 
-**David Abdurahmanov**
-- Github: [@](https://github.com/)
