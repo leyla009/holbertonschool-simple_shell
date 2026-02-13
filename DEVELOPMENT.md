@@ -3,9 +3,20 @@
 This file tracks the technical progress, challenges, and solutions encountered during the development of the `hsh` project.
 
 ## Project Status Overview
-- **Phase:** Task 1 (Core Execution)
-- **Current Goal:** Implementing the Fork-Wait-Execve lifecycle.
-- **Betty Status:** 0 Errors, 0 Warnings.
+Phase: Task 6 (Simple Shell 1.0)
+Current Goal: Milestone Achievement - Full path resolution and basic built-in commands (`exit`, `env`).
+Betty Status: 0 Errors, 0 Warnings (Strict compliance maintained).
+Memory Status: Valgrind-clean; all heap allocations (`getline`, `strdup`, `find_path`) are tracked and freed.
+
+## Completed Features
+- Core Execution: Fork-Wait-Execve lifecycle is stable.
+- Path Resolution: Commands are located via the PATH environment variable.
+- Exit Built-in: Shell terminates with correct status using exit.
+- Env Built-in: Displays current environment variables using environ.
+- Error Handling: Returns 127 for missing commands and 2 for illegal operations.
+
+## Current Goal
+Implementing advanced built-ins and custom buffer management (Task 7+).
 
 ---
 
