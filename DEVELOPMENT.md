@@ -3,18 +3,20 @@
 This file tracks the technical progress, challenges, and solutions encountered during the development of the `hsh` project.
 
 ## Project Status Overview
-Phase: Task 6 (Simple Shell 1.0)
-Current Goal: Milestone Achievement - Full path resolution and basic built-in commands (`exit`, `env`).
-Betty Status: 0 Errors, 0 Warnings (Strict compliance maintained).
-Memory Status: Valgrind-clean; all heap allocations (`getline`, `strdup`, `find_path`) are tracked and freed.
+- Phase: Task 6 (Simple Shell 1.0)
+- Current Goal: Milestone Achievement - Full path resolution and basic built-in commands (`exit`, `env`).
+- Betty Status: 0 Errors, 0 Warnings (Strict compliance maintained).
+- Memory Status: Valgrind-clean; all heap allocations (`getline`, `strdup`, `find_path`) are tracked and freed.
 
 ## Completed Features
-- Core Execution: Fork-Wait-Execve lifecycle is stable.
-- Path Resolution: Commands are located via the PATH environment variable.
-- Exit Built-in: Shell terminates with correct status using exit.
-- Env Built-in: Displays current environment variables using environ.
-- Error Handling: Returns 127 for missing commands and 2 for illegal operations.
-- Custom Getline: Built-in buffer management using static variables.
+- **Core Execution:** Fork-Wait-Execve lifecycle is stable.
+- **Path Resolution:** Commands are located via the `PATH` environment variable.
+- **Env Built-in:** Displays current environment variables using `environ`.
+- **Exit Built-in:** Shell terminates with the correct status using `exit`, handling both manual exits and EOF (Ctrl+D).
+- **Error Handling:** Returns 127 for missing commands and 2 for illegal operations.
+- **Custom Getline:** Built-in buffer management using static variables and manual `read` calls to replace restricted library functions.
+- **Memory Management:** Manual `_realloc` implementation handles dynamic buffer expansion for large inputs without forbidden symbols.
+- **String Library:** Independent utility suite (`_strlen`, `_strcmp`, `_strtok`, etc.) eliminates dependencies on `<string.h>`.
 
 ## Current Goal
 
@@ -152,19 +154,19 @@ Handling command-line arguments for the exit built-in (Task 9)
 - **Objective:** Implement a way for the user to terminate the shell session gracefully.
 - **Challenge:** Distinguishing between built-in commands and external binaries. Built-ins must be executed in the parent process.
 - **Solution:** Added a `strcmp` check at the start of the execution logic. If the input is "exit", the shell cleans up its primary memory buffers and calls the `exit()` system call.
-**Key Learning:** Built-ins like `exit` or `cd` cannot be external programs because they need to modify the state of the shell process itself.
+- **Key Learning:** Built-ins like `exit` or `cd` cannot be external programs because they need to modify the state of the shell process itself.
 
 ### Feb 12, 2026 | Task 5: C90 Scope Compliance
 - **Issue:** `redeclaration of ‘full_path’` and `mixed declarations and code` errors.
 - **Root Cause:** In the C90 standard, variables must be declared at the very beginning of a block (immediately after a `{`). I had an executable `if` statement followed by a new variable declaration.
 - **Solution:** Moved `char *full_path;` to the top of the `if (argv[0] != NULL)` block and changed the initialisation line to a simple assignment (`full_path = ...`).
-**Key Learning:** C90 is much less flexible than modern C (C99/C11). The "Declaration -> Logic" sequence is mandatory.
+- **Key Learning:** C90 is much less flexible than modern C (C99/C11). The "Declaration -> Logic" sequence is mandatory.
 
 ### Feb 12, 2026 | Task 5: Exit Status Synchronisation
 - **Issue:** Shell exiting with code 0 instead of the exit code of the last failed command.
 - **Problem:** The `execute_command` function was forking and waiting, but the exit status of the child was being lost in the parent process.
 - **Solution:** Modified `execute_command` to return the result of `WEXITSTATUS(status)`. Updated the main loop to assign this return value to the global `status` variable.
-**Result:** When `/bin/ls` fails with status 2, the shell now correctly exits with status 2 when the `exit` command is called.
+- **Result:** When `/bin/ls` fails with status 2, the shell now correctly exits with status 2 when the `exit` command is called.
 
 ### Feb 13, 2026 | Task 6: Environment Built-in (Simple Shell 1.0)
 - **Objective:** Implement the env built-in command to display all current environment variables, providing the user with a snapshot of the shell's configuration.
@@ -219,7 +221,13 @@ Handling command-line arguments for the exit built-in (Task 9)
 - **Issue:** `error: unused parameter ‘stream’ [-Werror=unused-parameter]`.
 - **Cause:** Once `fileno(stream)` was removed, the `stream` variable was no longer used, but the task required we keep the specific function signature for `_getline`.
 - **Solution:** Used the `(void)stream`; idiom at the start of the function to explicitly tell the compiler the parameter is intentionally unused.
- 
+
+### Feb 13, 2026 | Milestone: 1.0 Production Readiness
+
+- **Optimization:** Replaced all remaining standard `realloc` and `fileno` calls with custom implementations.
+- **Architecture:** Consolidated memory management into `memory.c` and environment logic into `env_utils.c`.
+- **Standardization:** Validated all function signatures against `gnu89` strict type-checking requirements.
+
  ---
 
 ## Contribution Tracking
