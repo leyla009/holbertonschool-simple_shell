@@ -30,5 +30,8 @@ ssize_t _getline(char **lineptr, size_t *n, FILE *stream);
 int execute_command(char **argv);
 char *find_path(char *command);
 
+/* Memory Management */
+void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
+void free_argv(char **argv);
 
 #endif /* MAIN_H */
