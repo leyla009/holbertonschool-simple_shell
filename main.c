@@ -20,7 +20,7 @@ int main(void)
 		if (isatty(STDIN_FILENO))
 			printf(":) ");
 
-		nread = getline(&line, &len, stdin);
+		nread = _getline(&line, &len, stdin);
 		if (nread == -1)
 		{
 			if (isatty(STDIN_FILENO))
@@ -44,13 +44,13 @@ int main(void)
 		{
 			char *full_path = NULL;
 			
-			if (strcmp(argv[0], "exit") == 0)
+			if (_strcmp(argv[0], "exit") == 0)
 			{
 				free(line);
 				exit(status);
 			}
 
-			if (strcmp(argv[0], "env") == 0)
+			if (_strcmp(argv[0], "env") == 0)
 			{
 				int i = 0;
 				while (environ[i])

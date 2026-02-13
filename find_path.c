@@ -16,10 +16,10 @@ char *find_path(char *command)
 	if (!command)
 		return (NULL);
 
-	if (strchr(command, '/') != NULL)
+	if (_strchr(command, '/') != NULL)
 	{
 		if (stat(command, &st) == 0)
-			return (strdup(command));
+			return (_strdup(command));
 		return (NULL);
 	}
 
@@ -27,7 +27,7 @@ char *find_path(char *command)
 	if (!path || strlen(path) == 0)
 		return (NULL);
 
-	path_copy = strdup(path);
+	path_copy = _strdup(path);
 	if (!path_copy)
 		return (NULL);
 
@@ -45,7 +45,7 @@ char *find_path(char *command)
 			return (NULL);
 		}
 
-		strcpy(file_path, token);
+		_strcpy(file_path, token);
 		strcat(file_path, "/");
 		strcat(file_path, command);
 
