@@ -1,12 +1,45 @@
 #include "main.h"
 
 /**
- * _strcmp - compares two strings
- * @s1: string 1
- * @s2: string 2
- * Return: difference
+ * _strlen - returns the length of a string
+ * @s: string to check
+ * Return: length of the string
  */
+int _strlen(const char *s)
+{
+	int len = 0;
 
+	if (!s)
+		return (0);
+
+	while (s[len])
+		len++;
+	return (len);
+}
+
+/**
+ * _strcmp - compares two strings
+ * @s1: first string
+ * @s2: second string
+ * Return: difference between strings
+ */
+int _strcmp(const char *s1, const char *s2)
+{
+	while (*s1 && *s2 && *s1 == *s2)
+	{
+		s1++;
+		s2++;
+	}
+	return (*s1 - *s2);
+}
+
+/**
+ * _strncmp - compares two strings up to n bytes
+ * @s1: first string
+ * @s2: second string
+ * @n: number of characters to compare
+ * Return: 0 if match, difference if not
+ */
 int _strncmp(const char *s1, const char *s2, size_t n)
 {
 	size_t i;
@@ -16,44 +49,87 @@ int _strncmp(const char *s1, const char *s2, size_t n)
 		if (s1[i] != s2[i])
 			return (s1[i] - s2[i]);
 	}
-
 	if (i == n)
 		return (0);
-
 	return (s1[i] - s2[i]);
 }
 
 /**
- * _strdup - duplicates a string
- * @src: source string
- * Return: pointer to new string
+ * _strdup - duplicates a string in heap memory
+ * @src: string to duplicate
+ * Return: pointer to the new string
  */
-char *_strdup(char *src)
+char *_strdup(const char *src)
 {
 	char *dst;
-	int i, len = 0;
+	int i, len;
 
 	if (src == NULL)
 		return (NULL);
-	while (src[len])
-		len++;
+
+	len = _strlen(src);
 	dst = malloc(sizeof(char) * (len + 1));
 	if (dst == NULL)
 		return (NULL);
+
 	for (i = 0; i <= len; i++)
 		dst[i] = src[i];
+
 	return (dst);
 }
 
 /**
- * _strcpy - copies a string
+ * _strchr - locates a character in a string
+ * @s: string to search
+ * @c: character to find
+ * Return: pointer to first occurrence or NULL
+ */
+char *_strchr(const char *s, char c)
+{
+	while (*s)
+	{
+		if (*s == c)
+			return ((char *)s);
+		s++;
+	}
+	if (*s == c)
+		return ((char *)s);
+	return (NULL);
+}
+
+/**
+ * _strcat - concatenates two strings
+ * @dest: destination string
+ * @src: source string
+ * Return: pointer to destination string
+ */
+char *_strcat(char *dest, const char *src)
+{
+	int i = 0, j = 0;
+
+	while (dest[i])
+		i++;
+
+	while (src[j])
+	{
+		dest[i] = src[j];
+		i++;
+		j++;
+	}
+	dest[i] = '\0';
+	return (dest);
+}
+
+/**
+ * _strcpy - copies a string from src to dest
  * @dest: destination
  * @src: source
  * Return: pointer to dest
  */
-char *_strcpy(char *dest, char *src)
+char *_strcpy(char *dest, const char *src)
 {
 	int i = 0;
+
 	while (src[i])
 	{
 		dest[i] = src[i];
@@ -64,22 +140,50 @@ char *_strcpy(char *dest, char *src)
 }
 
 /**
- * _strcat - concatenates two strings
- * @dest: destination
- * @src: source
- * Return: pointer to dest
+ * _strtok - breaks a string into a sequence of zero or more nonempty tokens
+ * @str: the string to be parsed
+ * @delim: the characters that separate tokens
+ *
+ * Return: a pointer to the next token, or NULL if there are no more tokens
  */
-char *_strcat(char *dest, char *src)
+char *_strtok(char *str, const char *delim)
 {
-	int i = 0, j = 0;
-	while (dest[i])
-		i++;
-	while (src[j])
+	static char *next_token;
+	char *token_start;
+
+	/* If a new string is provided, start from the beginning */
+	if (str != NULL)
+		next_token = str;
+
+	/* If we've reached the end of the string, return NULL */
+	if (next_token == NULL || *next_token == '\0')
+		return (NULL);
+
+	/* Skip leading delimiters */
+	while (*next_token != '\0' && _strchr(delim, *next_token) != NULL)
+		next_token++;
+
+	/* If after skipping delimiters we are at the end, return NULL */
+	if (*next_token == '\0')
+		return (NULL);
+
+	token_start = next_token;
+
+	/* Find the end of the current token */
+	while (*next_token != '\0' && _strchr(delim, *next_token) == NULL)
+		next_token++;
+
+	/* If we found a delimiter, null-terminate the token and move past it */
+	if (*next_token != '\0')
 	{
-		dest[i] = src[j];
-		i++;
-		j++;
+		*next_token = '\0';
+		next_token++;
 	}
-	dest[i] = '\0';
-	return (dest);
+	else
+	{
+		/* We hit the end of the string, ensure next call returns NULL */
+		next_token = NULL;
+	}
+
+	return (token_start);
 }
