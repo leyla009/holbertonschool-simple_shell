@@ -36,7 +36,7 @@ char *find_path(char *command)
 
 	while (token != NULL)
 	{
-		dir_len = strlen(token);
+		dir_len = _strlen(token);
 
 		file_path = malloc(dir_len + cmd_len + 2);
 		if (!file_path)

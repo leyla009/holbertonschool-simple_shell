@@ -16,6 +16,7 @@ extern char **environ;
 
 /* Custom String Functions */
 int _strlen(char *s);
+int _strcmp(char *s1, char *s2);
 int _strncmp(char *s1, char *s2, size_t n);
 char *_strdup(char *src);
 char *_strchr(char *s, char c);
