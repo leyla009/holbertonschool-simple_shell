@@ -16,7 +16,7 @@
 extern char **environ;
 
 /* Function Prototypes */
-
+ssize_t _getline(char **lineptr, size_t *n, FILE *stream);
 int execute_command(char **argv);
 char *find_path(char *command);
 char *_getenv(const char *name);
