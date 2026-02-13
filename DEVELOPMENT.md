@@ -14,9 +14,11 @@ Memory Status: Valgrind-clean; all heap allocations (`getline`, `strdup`, `find_
 - Exit Built-in: Shell terminates with correct status using exit.
 - Env Built-in: Displays current environment variables using environ.
 - Error Handling: Returns 127 for missing commands and 2 for illegal operations.
+- Custom Getline: Built-in buffer management using static variables.
 
 ## Current Goal
-Implementing advanced built-ins and custom buffer management (Task 7+).
+
+Handling command-line arguments for the exit built-in (Task 9)
 
 ---
 
@@ -179,7 +181,19 @@ Implementing advanced built-ins and custom buffer management (Task 7+).
 4. If matched, the shell iterates through `environ[i]` and prints each string followed by `\n`.
 5. The shell resets the `status` to `0` and returns to the prompt.
 
----
+### Feb 13, 2026 | Task 9: Custom _getline Implementation
+- **Objective:** Replace the standard `getline` with a custom version to reduce system call overhead.
+- **Challenge:** Managing the "leftover" characters from a `read` system call that belong to the next line of input.
+- **Solution:** Implemented `_getline` using **static variables** to act as a persistent local cache. Used a 1024-byte buffer to minimise `read` calls.
+- **Key Learning:** Learned the mechanics of buffered I/O and how `static` memory persists in the data segment rather than the stack.
+
+### Feb 13, 2026 | Task 9: Header Refactoring
+- **Objective:** Organize main.h to accommodate the new _getline prototype.
+- **Decision:** Grouped _getline under a new "Custom Input Functions" section rather than the "Environment" section.
+- **Reasoning:** Maintained a clear distinction between global variables (environ) and function definitions to improve code readability and maintainability.
+- **Key Learning:** Logical grouping in headers prevents "spaghetti code" and helps other developers (or your future self) find functions faster.
+
+ ---
 
 ## Contribution Tracking
 *Updated: Feb 13, 2026*
