@@ -32,11 +32,11 @@ int main(void)
 			line[nread - 1] = '\0';
 
 		i = 0;
-		token = strtok(line, " ");
+		token = _strtok(line, " ");
 		while (token != NULL && i < 31)
 		{
 			argv[i++] = token;
-			token = strtok(NULL, " ");
+			token = _strtok(NULL, " ");
 		}
 		argv[i] = NULL;
 

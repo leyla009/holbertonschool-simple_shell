@@ -37,3 +37,42 @@ char *_strdup(char *src)
 		dst[i] = src[i];
 	return (dst);
 }
+
+/**
+ * _strcpy - copies a string
+ * @dest: destination
+ * @src: source
+ * Return: pointer to dest
+ */
+char *_strcpy(char *dest, char *src)
+{
+	int i = 0;
+	while (src[i])
+	{
+		dest[i] = src[i];
+		i++;
+	}
+	dest[i] = '\0';
+	return (dest);
+}
+
+/**
+ * _strcat - concatenates two strings
+ * @dest: destination
+ * @src: source
+ * Return: pointer to dest
+ */
+char *_strcat(char *dest, char *src)
+{
+	int i = 0, j = 0;
+	while (dest[i])
+		i++;
+	while (src[j])
+	{
+		dest[i] = src[j];
+		i++;
+		j++;
+	}
+	dest[i] = '\0';
+	return (dest);
+}

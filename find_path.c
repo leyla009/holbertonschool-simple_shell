@@ -24,15 +24,15 @@ char *find_path(char *command)
 	}
 
 	path = _getenv("PATH");
-	if (!path || strlen(path) == 0)
+	if (!path || _strlen(path) == 0)
 		return (NULL);
 
 	path_copy = _strdup(path);
 	if (!path_copy)
 		return (NULL);
 
-	cmd_len = strlen(command);
-	token = strtok(path_copy, ":");
+	cmd_len = _strlen(command);
+	token = _strtok(path_copy, ":");
 
 	while (token != NULL)
 	{
@@ -46,8 +46,8 @@ char *find_path(char *command)
 		}
 
 		_strcpy(file_path, token);
-		strcat(file_path, "/");
-		strcat(file_path, command);
+		_strcat(file_path, "/");
+		_strcat(file_path, command);
 
 		if (stat(file_path, &st) == 0)
 		{
@@ -56,7 +56,7 @@ char *find_path(char *command)
 		}
 
 		free(file_path);
-		token = strtok(NULL, ":");
+		token = _strtok(NULL, ":");
 	}
 
 	free(path_copy);
