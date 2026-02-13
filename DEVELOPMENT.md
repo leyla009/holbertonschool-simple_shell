@@ -181,18 +181,45 @@ Handling command-line arguments for the exit built-in (Task 9)
 4. If matched, the shell iterates through `environ[i]` and prints each string followed by `\n`.
 5. The shell resets the `status` to `0` and returns to the prompt.
 
-### Feb 13, 2026 | Task 9: Custom _getline Implementation
-- **Objective:** Replace the standard `getline` with a custom version to reduce system call overhead.
-- **Challenge:** Managing the "leftover" characters from a `read` system call that belong to the next line of input.
-- **Solution:** Implemented `_getline` using **static variables** to act as a persistent local cache. Used a 1024-byte buffer to minimise `read` calls.
-- **Key Learning:** Learned the mechanics of buffered I/O and how `static` memory persists in the data segment rather than the stack.
+### Feb 13, 2026 | Task 9 Development Log: Issues & Resolutions
+### 1. The "Built-in" Conflict
+- **Issue:** GCC flagged a "conflicting types" or "note: built-in declared here" error for functions like `strncmp`.
+- **Cause:** The compiler has internal versions of standard library functions. When we implemented our own versions without using the standard headers, the names collided.
+- **Solution:** Prefixed all custom utility functions with an underscore (e.g., `_strncmp`, `_strlen`, `_strtok`). This created a unique namespace and prevented the compiler from confusing our code with GLIBC built-ins.
 
-### Feb 13, 2026 | Task 9: Header Refactoring
-- **Objective:** Organize main.h to accommodate the new _getline prototype.
-- **Decision:** Grouped _getline under a new "Custom Input Functions" section rather than the "Environment" section.
-- **Reasoning:** Maintained a clear distinction between global variables (environ) and function definitions to improve code readability and maintainability.
-- **Key Learning:** Logical grouping in headers prevents "spaghetti code" and helps other developers (or your future self) find functions faster.
+### 2. The "Const Qualifier" Mismatch
+- **Issue:** Error: `passing argument discards ‘const’ qualifier from pointer target type`.
+- **Cause:** Functions like `_getenv` use `const char *` for the environment variable name (to ensure it isn't accidentally modified). Our helper functions like `_strncmp` were originally defined to take `char *` (mutable), which the compiler saw as a security risk.
+- **Solution:** Refactored all string utility prototypes in `main.h` and definitions in `strings.c` to use `const char *` for source strings.
 
+### 3. The Linker Duplicate Definition
+- **Issue:** `ld: multiple definition of '_getenv'`.
+- **Cause:** The project had the same function implementation in two different source files (`_getenv.c` and `env_utils.c`). The linker couldn't decide which one to use for the final executable.
+- **Solution:** Consolidated all environment-related logic into `env_utils.c` and deleted the redundant `_getenv.c` file.
+
+### 4. Forbidden Function: `fileno`
+- **Issue:** Checker rejected the binary with the message `Function 'fileno' is not allowed`.
+- **Cause:** `fileno` is a library function used to convert a `FILE *` stream to an integer file descriptor. The project constraints require direct system calls.
+- **Solution:** Bypassed the stream abstraction entirely. In `_getline.c`, changed the read call to use the hardcoded file descriptor `0` (or `STDIN_FILENO`) instead of `fileno(stream)`.
+
+### 5. Forbidden Function: `realloc`
+- **Issue:** Checker rejected the binary with the message `Function 'realloc' is not allowed`.
+- **Cause:** To handle large inputs, `_getline` needs to resize its buffer. Using the standard `realloc` was forbidden to test manual memory management skills.
+- **Solution:** Implemented a custom `_realloc` function in `memory.c`. This function manually handles the "Allocate-Copy-Free" lifecycle:
+  - `malloc` a new block of `new_size`.
+  - Manually copy data from the old pointer using a `for` loop (to avoid forbidden `memcpy`).
+  - `free` the old pointer.
+
+### 6. Undeclared Identifiers in New Files
+- **Issue:** `memory.c: error: ‘NULL’ undeclared and implicit declaration of function ‘malloc’`.
+- **Cause:** In C, every `.c` file is an independent unit. A new file like `memory.c` does not automatically know about the headers included in `main.c`.
+- **Solution:** Added `#include "main.h"` to the top of every `.c` file to ensure the compiler has access to the standard library definitions (via our central header).
+
+### 7. Unused Parameter Warnings
+- **Issue:** `error: unused parameter ‘stream’ [-Werror=unused-parameter]`.
+- **Cause:** Once `fileno(stream)` was removed, the `stream` variable was no longer used, but the task required we keep the specific function signature for `_getline`.
+- **Solution:** Used the `(void)stream`; idiom at the start of the function to explicitly tell the compiler the parameter is intentionally unused.
+ 
  ---
 
 ## Contribution Tracking
