@@ -46,6 +46,14 @@ int main(void)
 			
 			if (_strcmp(argv[0], "exit") == 0)
 			{
+				int status = 0;
+				if (argv[1] != NULL)
+				{
+					status = _atoi(argv[1]);
+				}
+
+				free_argv(argv);
+
 				free(line);
 				exit(status);
 			}
