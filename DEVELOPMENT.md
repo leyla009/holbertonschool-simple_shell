@@ -228,10 +228,15 @@ Handling command-line arguments for the exit built-in (Task 9)
 - **Architecture:** Consolidated memory management into `memory.c` and environment logic into `env_utils.c`.
 - **Standardization:** Validated all function signatures against `gnu89` strict type-checking requirements.
 
+### Feb 15, 2026 | Task 10: Architectural Separation
+- **Observation:** Realized that `exit` with arguments must be handled in the parent process to ensure the shell terminates with the user-defined status.
+- **Action:** Kept `exec.c` dedicated to sub-process management (`fork`/`execve`) and moved the `exit` status parsing into the main control loop.
+- **Logic:** Used `argv[1]` as the source for the exit code, passing it through a custom `_atoi` to convert the string to a machine-readable integer.
+- **Key Learning:** Built-in commands modify the shell's internal state, whereas `exec.c` logic handles external state.
  ---
 
 ## Contribution Tracking
-*Updated: Feb 13, 2026*
+*Updated: Feb 15, 2026*
 
 | Contributor | Roles | Focus Area |
 | :--- | :--- | :--- |
