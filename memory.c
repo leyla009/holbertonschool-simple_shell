@@ -37,3 +37,21 @@ void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size)
 	free(ptr);
 	return (new_ptr);
 }
+
+/**
+ * free_argv - frees a double pointer array of strings
+ * @argv: array to free
+ */
+void free_argv(char **argv)
+{
+	int i = 0;
+
+	if (!argv)
+		return;
+	while (argv[i])
+	{
+		free(argv[i]);
+		i++;
+	}
+	free(argv);
+}
