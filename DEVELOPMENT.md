@@ -228,15 +228,39 @@ Handling command-line arguments for the exit built-in (Task 9)
 - **Architecture:** Consolidated memory management into `memory.c` and environment logic into `env_utils.c`.
 - **Standardization:** Validated all function signatures against `gnu89` strict type-checking requirements.
 
-### Feb 15, 2026 | Task 10: Architectural Separation
+### Feb 15, 2026 | Task 11: Architectural Separation
 - **Observation:** Realized that `exit` with arguments must be handled in the parent process to ensure the shell terminates with the user-defined status.
 - **Action:** Kept `exec.c` dedicated to sub-process management (`fork`/`execve`) and moved the `exit` status parsing into the main control loop.
 - **Logic:** Used `argv[1]` as the source for the exit code, passing it through a custom `_atoi` to convert the string to a machine-readable integer.
 - **Key Learning:** Built-in commands modify the shell's internal state, whereas `exec.c` logic handles external state.
+
+### Feb 15, 2026 | Task 11: Compiler Constraint Satisfaction
+- **Issue:** `error: attempt to free a non-heap object` in `main.c` and `unused variable` in `memory.c`.
+- **Cause:** Attempting to call `free()` on a stack-allocated array and leaving a counter variable (`i`) after refactoring the `free_argv` logic.
+- **Solution:** Removed the invalid `free(argv)` call from `main.c` and deleted the unused integer `i` from `memory.c`.
+- **Key Learning:** `-Werror` transforms best-practice warnings into mandatory fixes. Stack-allocated objects must never be manually freed.
+
+### Feb 15, 2026 | Task 11: Stack vs Heap Clarification
+- **Observation:** Encountered `free-nonheap-object` error when trying to release `argv`.
+- **Correction:** Identified that `argv` was defined as a fixed-size array on the stack. Removed manual `free` calls for this object while maintaining `free(line)` for the heap-allocated input buffer.
+- **Improvement:** Standardized exit status logic to default to the previous command's return value if no argument is provided to `exit`.
+
+### Feb 15, 2026 | Task 11: Finalizing Memory Utilities
+- **Issue:** GCC error `unused variable ‘i’` in `memory.c`.
+- **Cause:** Refactored `free_argv` to remove individual pointer freeing, leaving the iterator `i` without a purpose.
+- **Solution:** Deleted the unused declaration of `i`.
+- **Key Learning:** Refactoring code logic often requires a secondary pass to prune unused declarations and keep the namespace clean.
+
+### Feb 15, 2026 | Task 11: Exit Argument Validation
+- **Issue:** Shell accepted negative numbers for exit status, resulting in status 255 instead of the required error.
+- **Requirement:** Standard shell behavior requires an "Illegal number" error for non-digit arguments and an exit code of 2.
+- **Solution:** Implemented a validation loop in the `exit` built-in handler to check for non-digit characters (including negative signs).
+- **Result:** `exit -98` now triggers the correct stderr message and returns status 2.
  ---
 
 ## Contribution Tracking
-*Updated: Feb 15, 2026*
+*Updated:
+Feb 15, 2026*
 
 | Contributor | Roles | Focus Area |
 | :--- | :--- | :--- |
