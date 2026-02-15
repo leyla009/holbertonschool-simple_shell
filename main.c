@@ -14,6 +14,7 @@ int main(void)
 	char *token;
 	int i;
 	int status = 0;
+	int j;
 
 	while (1)
 	{
@@ -75,6 +76,30 @@ int main(void)
 				}
 				status = 0;
 				continue;
+			}
+
+			if (_strcmp(argv[0], "setenv") == 0)
+			{
+				if (argv[1] && argv[2])
+				{
+					if (_setenv(argv[1], argv[2]) == -1)
+						fprintf(stderr, "setenv: Error occurred\n");
+				}
+				else
+					fprintf(stderr, "setenv: Too few arguments\n");
+				continue; /* Return to start of loop */
+			}
+
+			if (_strcmp(argv[0], "unsetenv") == 0)
+			{
+				if (argv[1])
+				{
+					if (_unsetenv(argv[1]) == -1)
+						fprintf(stderr, "unsetenv: Error occurred\n");
+				}
+				else
+					fprintf(stderr, "unsetenv: Too few arguments\n");
+				continue; /* Return to start of loop */
 			}
 
 			full_path = find_path(argv[0]);
