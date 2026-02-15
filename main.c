@@ -52,8 +52,7 @@ int main(void)
 					status = _atoi(argv[1]);
 				}
 
-				free_argv(argv);
-
+				free(argv);
 				free(line);
 				exit(status);
 			}

@@ -48,10 +48,5 @@ void free_argv(char **argv)
 
 	if (!argv)
 		return;
-	while (argv[i])
-	{
-		free(argv[i]);
-		i++;
-	}
 	free(argv);
 }
