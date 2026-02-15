@@ -46,15 +46,13 @@ int main(void)
 			
 			if (_strcmp(argv[0], "exit") == 0)
 			{
-				int status = 0;
+				int exit_code = status;
 				if (argv[1] != NULL)
 				{
-					status = _atoi(argv[1]);
+					exit_code = _atoi(argv[1]);
 				}
-
-				free(argv);
 				free(line);
-				exit(status);
+				exit(exit_code);
 			}
 
 			if (_strcmp(argv[0], "env") == 0)
