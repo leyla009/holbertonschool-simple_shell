@@ -74,8 +74,8 @@ int main(void)
 
 			if (_strcmp(argv[0], "env") == 0)
 			{
-			
-				for (j = 0; environ[j]; j++)
+				char **ptr = environ;
+				for (j = 0; ptr[j]; j++)
 				{
 					printf("%s\n", environ[j]);
 				}
