@@ -134,6 +134,13 @@ int main(void)
 	free_argv(argv);
     }
     free(line);
+    
+    if (argv != NULL)
+	    free_argv(argv);
+
+    if (env_memory_to_free)
+	    free(env_memory_to_free);
+
     return (status);
 }
 void cleanup_all(char *line, char **argv)
