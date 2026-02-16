@@ -5,13 +5,14 @@
  *
  * Return: The last exit status
  */
+void cleanup_all(char *line, char **argv);
 
 int main(void)
 {
     char *line = NULL, *token, *full_path = NULL;
     size_t len = 0;
     ssize_t nread;
-    char *argv[32];
+    char **argv;
     int i, j, status = 0;
 
     while (1)
@@ -29,6 +30,7 @@ int main(void)
         if (line[nread - 1] == '\n')
             line[nread - 1] = '\0';
 
+	argv = malloc(sizeof(char *) * 32);
         /* Tokenization */
         i = 0;
         token = _strtok(line, " ");
@@ -40,7 +42,10 @@ int main(void)
         argv[i] = NULL;
 
         if (argv[0] == NULL)
-            continue;
+	{
+		free(argv);
+		continue;
+	}
 
         /* 1. Builtin: Exit */
         if (_strcmp(argv[0], "exit") == 0)
@@ -62,8 +67,7 @@ int main(void)
 				exit_code = _atoi(argv[1]);
 			}
 			
-			free(line);
-			free_argv(argv);
+			cleanup_all(line, argv);
 
 			exit(exit_code);
 		}	
@@ -130,4 +134,15 @@ int main(void)
     }
     free(line);
     return (status);
+}
+void cleanup_all(char *line, char **argv)
+{
+    extern char *env_memory_to_free;
+
+    if (argv)
+        free(argv);
+    if (line)
+        free(line);
+    if (env_memory_to_free)
+        free(env_memory_to_free);
 }

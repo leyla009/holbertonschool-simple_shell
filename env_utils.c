@@ -1,4 +1,5 @@
 #include "main.h"
+char *env_memory_to_free = NULL;
 
 /**
  * _getenv - Gets the value of an environment variable.
@@ -45,13 +46,17 @@ int _setenv(const char *name, const char *value)
 		return (-1);
 
 	name_len = _strlen(name);
-	new_var = malloc(name_len + _strlen(value) + 2);
+	value_len = _strlen(value);
+
+	new_var = malloc(name_len + value_len  + 2);
 	if (!new_var)
 		return (-1);
 
-	_strcpy(new_var, name);
+	env_memory_to_free = new_var;
+
+	_strcpy(new_var, (char *)name);
 	_strcat(new_var, "=");
-	_strcat(new_var, value);
+	_strcat(new_var, (char *)value);
 
 	while (environ[i])
 	{

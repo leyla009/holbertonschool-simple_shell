@@ -12,6 +12,7 @@
 #include <fcntl.h>
 #include <errno.h>
 
+extern char *env_memory_to_free;
 extern char **environ;
 
 /* Custom String Functions */
@@ -40,5 +41,6 @@ char *get_current_directory(void);
 /* Memory Management */
 void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
 void free_argv(char **argv);
+void cleanup_all(char *line, char **argv);
 
 #endif /* MAIN_H */
