@@ -81,11 +81,11 @@ int main(void)
 			exit(exit_code);
 			if (_strcmp(argv[0], "env") == 0)
 			{
-				int i = 0;
-				while (environ[i])
+				int j = 0;
+				while (environ[j])
 				{
-					printf("%s\n", environ[i]);
-					i++;
+					printf("%s\n", environ[j]);
+					j++;
 				}
 				status = 0;
 				continue;
