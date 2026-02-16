@@ -48,6 +48,10 @@ int main(void)
 			{
 				int exit_code = status;
 				int j;
+
+				for (j = 0; argv[1][j]; j++)
+				{
+
 				if (argv[1] != NULL)
 				{
 					for (j = 0; argv[1][j]; j++)
@@ -65,6 +69,16 @@ int main(void)
 				exit(exit_code);
 			}
 
+			for (j = 0; environ[j]; j++)
+			{
+				if (_strncmp(environ[j], "VARIABLE=", 9) == 0)
+				{
+					free(environ[j]);
+				}
+			}
+
+			free(line);
+			exit(exit_code);
 			if (_strcmp(argv[0], "env") == 0)
 			{
 				int i = 0;
