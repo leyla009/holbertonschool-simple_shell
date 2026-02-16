@@ -17,10 +17,10 @@ This file tracks the technical progress, challenges, and solutions encountered d
 - **Custom Getline:** Built-in buffer management using static variables and manual `read` calls to replace restricted library functions.
 - **Memory Management:** Manual `_realloc` implementation handles dynamic buffer expansion for large inputs without forbidden symbols.
 - **String Library:** Independent utility suite (`_strlen`, `_strcmp`, `_strtok`, etc.) eliminates dependencies on `<string.h>`.
-
-## Current Goal
-
-Handling command-line arguments for the exit built-in (Task 9)
+- **Environment Modification (setenv/unsetenv):** Supports dynamic updates to the shell's environment state.
+- **Dynamic Reallocation:** Implemented a system to grow the `environ` pointer array on the heap when new variables are added.
+- **Global Memory Tracking:** Developed a dual-tracker system using `env_memory_to_free` (for strings) and `env_array_to_free` (for pointer arrays) to maintain a zero-leak heap.
+- **Pointer Rotation:** Employs a "free-before-assign" logic that prevents memory orphans when variables are updated multiple times.
 
 ---
 
@@ -256,11 +256,21 @@ Handling command-line arguments for the exit built-in (Task 9)
 - **Requirement:** Standard shell behavior requires an "Illegal number" error for non-digit arguments and an exit code of 2.
 - **Solution:** Implemented a validation loop in the `exit` built-in handler to check for non-digit characters (including negative signs).
 - **Result:** `exit -98` now triggers the correct stderr message and returns status 2.
+
+### Feb 17, 2026 | Task 13: Setenv/Unsetenv Built-ins (Memory Management)
+- **Objective:** Implement the `setenv` and `unsetenv` built-in commands to allow dynamic modification of environment variables while maintaining a leak-free heap.
+- **Key Challenges & Solutions:**
+- **Dynamic Reallocation & Tracking:** Unlike the system's static `environ`, a custom `setenv` requires `malloc`. To prevent leaks, I implemented global trackers (`env_memory_to_free` and `env_array_to_free`) to hold the addresses of the most recent heap-allocated string and pointer array.
+- **Cross-File Memory Sync:** Used `extern` linkage to bridge `env_utils.c` and `main.c`. This allowed the `cleanup_all` function to "handshake" with the environment utilities, ensuring all heap data is reclaimed even when the program exits via script or EOF.
+- **The 232-Byte "Tray" Leak:** Identified through Valgrind that expanding the environment creates a new pointer array (the "tray"). On a 64-bit system, this was exactly 29 pointers (29×8 bytes). Solved by implementing a "free-before-assign" logic to rotate old arrays out of memory before assigning new ones.
+- **Order of Operations:** Structured the `_setenv` logic to ensure that if a `malloc` for the new pointer array fails, the previously allocated string is freed immediately, preventing "orphan" blocks in the heap.
+- **Key Learning:** Mastering the "Global Tracker" pattern for memory management. I learned that when a system global like `environ` is reassigned to the heap, the programmer assumes total responsibility for the lifecycle of that pointer and all its contents.
+ 
  ---
 
 ## Contribution Tracking
 *Updated:
-Feb 15, 2026*
+Feb 17, 2026*
 
 | Contributor | Roles | Focus Area |
 | :--- | :--- | :--- |
