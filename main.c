@@ -14,7 +14,6 @@ int main(void)
 	ssize_t nread;
 	char *argv[32];
 	char *token;
-	char *full_path = NULL;
 	int i;
 	int j;
 	int status = 0;
