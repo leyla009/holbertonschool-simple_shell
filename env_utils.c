@@ -66,9 +66,9 @@ int _setenv(const char *name, const char *value)
 		return (-1);
 	}
 
-	for (i = 0; environ[i]; i++)
+	for (j = 0; j < i; i++)
 	{
-		new_environ[i] = environ[i];
+		new_environ[j] = environ[j];
 	}
 
 	new_environ[i] = new_var;
