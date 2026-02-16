@@ -12,7 +12,9 @@ int main(void)
 	ssize_t nread;
 	char *argv[32];
 	char *token;
+	char *full_path = NULL;
 	int i;
+	int j;
 	int status = 0;
 
 	while (1)
@@ -72,34 +74,19 @@ int main(void)
 
 			if (_strcmp(argv[0], "env") == 0)
 			{
-				int j = 0;
-				
-				if (environ == NULL || environ[0] == NULL)
-				{
-					status = 0; 
-					continue;
-				}
-				while (environ[j])
+				for (j = 0; environ[j]; j++)
 				{
 					printf("%s\n", environ[j]);
-					j++;
 				}
 				fflush(stdout);
-			       	status = 0;
+				status = 0;
 				continue;
 			}
 
-			for (j = 0; environ[j]; j++)
+			if (_strcmp(argv[0], "exit") == 0)
 			{
-				if (_strncmp(environ[j], "VARIABLE=", 9) == 0)
-				{
-					free(environ[j]);
-				}
-			}
-
-			free(line);
-			exit(exit_code);
-			
+				free(line);
+				exit(status);
 			}
 
 			if (_strcmp(argv[0], "setenv") == 0)
