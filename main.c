@@ -73,7 +73,7 @@ int main(void)
 				exit_code = _atoi(argv[1]);
 			}
 			cleanup_all(line, argv);
-			return (status);
+			exit(exit_code);
 		}
 		
         /* 2. Builtin: Env */
