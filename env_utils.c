@@ -33,7 +33,7 @@ int _setenv(const char *name, const char *value)
 {
 	char *new_var, **new_environ;
 	int i = 0, j, found = -1;
-	size_t name_lenn = _strlen(name);
+	size_t name_len = _strlen(name);
 
 	new_var = malloc(name_len + _strlen(value) + 2);
 	if (!new_var) return (-1);
