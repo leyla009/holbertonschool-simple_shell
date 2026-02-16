@@ -36,8 +36,13 @@ ssize_t _getline(char **lineptr, size_t *n, FILE *stream)
 		{
 			n_chars = read(0, buffer, 1024);
 			pos = 0;
+			
 			if (n_chars <= 0)
+			{
+				if (i == 0)
+					return (-1);
 				break;
+			}
 		}
 
 		c = buffer[pos++];
@@ -55,12 +60,6 @@ ssize_t _getline(char **lineptr, size_t *n, FILE *stream)
 
 		if (c == '\n')
 			break;
-	}
-
-	if (n_chars <= 0) 
-	{
-		if (i == 0) return (-1);
-		break;
 	}
 
 	(*lineptr)[i] = '\0';
