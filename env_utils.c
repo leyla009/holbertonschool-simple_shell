@@ -2,6 +2,8 @@
 
 char *env_memory_to_free = NULL;
 
+char **env_array_to_free = NULL;
+
 /**
  * _getenv - Gets the value of an environment variable.
  * @name: The name of the variable to find.
