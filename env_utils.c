@@ -32,10 +32,13 @@ int _setenv(const char *name, const char *value)
 {
     char *new_var;
     int i = 0;
-    size_t name_len = _strlen(name);
-    size_t val_len = _strlen(value);
+    size_t name_len; 
 
-    new_var = malloc(name_len + val_len + 2);
+    if (!name || !value)
+	    return(-1);
+
+    name_len = _strlen(name);
+    new_var = malloc(name_len + _strlen(value) + 2);
     if (!new_var) return (-1);
 
     _strcpy(new_var, name);
@@ -52,6 +55,7 @@ int _setenv(const char *name, const char *value)
         }
         i++;
     }
+    free(new_var);
     return (0);
 }
 
