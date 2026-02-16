@@ -7,20 +7,26 @@ extern char **environ;
  * @argv: Array of arguments (argv[0] is "cd").
  * Return: 0 on success, -1 on failure.
  */
+
 int shell_cd(char **argv)
 {
     char *target = NULL, cwd[1024];
     char *home = _getenv("HOME"), *oldpwd = _getenv("OLDPWD");
 
-    if (!argv[1]) /* Case: cd */
+    if (!argv[1])
         target = home;
-    else if (_strcmp(argv[1], "-") == 0) /* Case: cd - */
+    else if (_strcmp(argv[1], "-") == 0)
     {
-        target = oldpwd;
+        /* If OLDPWD is NULL, stay where we are (current PWD) */
+        target = oldpwd ? oldpwd : _getenv("PWD");
+        /* Requirement: Always print the directory when using '-' */
         if (target)
-            _puts(target), _putchar('\n'); /* Requirement: print path on 'cd -' */
+        {
+            _puts(target);
+            _putchar('\n');
+        }
     }
-    else /* Case: cd [DIRECTORY] */
+    else
         target = argv[1];
 
     if (!target)
@@ -33,7 +39,7 @@ int shell_cd(char **argv)
         return (-1);
     }
 
-    _setenv("OLDPWD", cwd); 
+    _setenv("OLDPWD", cwd);
     getcwd(cwd, sizeof(cwd));
     _setenv("PWD", cwd);
 
