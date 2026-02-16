@@ -1,5 +1,7 @@
 #include "main.h"
 
+extern char *env_memory_to_free;
+
 /**
  * main - Entry point for the simple shell
  *
@@ -32,7 +34,7 @@ int main(void)
 			    printf("\n");
 		    
 		    cleanup_all(line, argv);
-		    break;
+		    return (status);
 	    }
 
 	    if (nread > 0 && line[nread - 1] == '\n')
@@ -50,8 +52,7 @@ int main(void)
 
         if (argv[0] == NULL)
 	{
-		free(argv);
-		continue;
+		goto skip_execution;
 	}
 
         /* 1. Builtin: Exit */
@@ -147,8 +148,6 @@ int main(void)
 }
 void cleanup_all(char *line, char **argv)
 {
-    extern char *env_memory_to_free;
-
     if (argv)
         free(argv);
     if (line)
