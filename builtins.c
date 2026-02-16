@@ -26,17 +26,16 @@ int shell_cd(char **argv)
     if (!target)
         return (0);
 
-    getcwd(cwd, sizeof(cwd)); /* Capture current for OLDPWD update */
+    getcwd(cwd, sizeof(cwd));
     if (chdir(target) != 0)
     {
-        /* Use your custom error printer here */
-        perror("hsh"); 
+        fprintf(stderr, "./hsh: 1: cd: can't cd to %s\n", target);
         return (-1);
     }
 
-    _setenv("OLDPWD", cwd); /* Update OLDPWD with where we were */
-    getcwd(cwd, sizeof(cwd)); /* Get new location */
-    _setenv("PWD", cwd); /* Update PWD with where we are now */
+    _setenv("OLDPWD", cwd); 
+    getcwd(cwd, sizeof(cwd));
+    _setenv("PWD", cwd);
 
     return (0);
 }
