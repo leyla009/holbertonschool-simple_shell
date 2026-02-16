@@ -26,6 +26,9 @@ char *_strcat(char *dest, const char *src);
 char *_strtok(char *str, const char *delim);
 char *_getenv(const char *name);
 int _atoi(char *s);
+int _putchar(char c);
+void _puts(char *str);
+
 /* Function Prototypes */
 ssize_t _getline(char **lineptr, size_t *n, FILE *stream);
 int execute_command(char **argv);
