@@ -11,6 +11,7 @@
 #include <limits.h>
 #include <fcntl.h>
 #include <errno.h>
+
 extern char **environ;
 
 /* Custom String Functions */
@@ -29,7 +30,7 @@ void _puts(char *str);
 
 /* Function Prototypes */
 ssize_t _getline(char **lineptr, size_t *n, FILE *stream);
-int execute_command(char **argv);
+int execute_command(char *path, char **argv);
 char *find_path(char *command);
 int _setenv(const char *name, const char *value);
 int _unsetenv(const char *name);

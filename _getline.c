@@ -59,8 +59,8 @@ ssize_t _getline(char **lineptr, size_t *n, FILE *stream)
 
 	if (n_chars <= 0) 
 	{
-    if (i == 0) return (-1);
-    break;
+		if (i == 0) return (-1);
+		break;
 	}
 
 	(*lineptr)[i] = '\0';
