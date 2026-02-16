@@ -1,4 +1,4 @@
-i#ifndef MAIN_H
+#ifndef MAIN_H
 #define MAIN_H
 #define BUF_SIZE 1024
 
