@@ -25,6 +25,9 @@ int main(void)
         {
             if (isatty(STDIN_FILENO))
                 printf("\n");
+	    
+	    free(argv);
+
             break;
         }
         if (line[nread - 1] == '\n')
@@ -135,9 +138,6 @@ int main(void)
     }
     free(line);
     
-    if (argv != NULL)
-	    free_argv(argv);
-
     if (env_memory_to_free)
 	    free(env_memory_to_free);
 
