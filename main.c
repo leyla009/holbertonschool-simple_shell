@@ -133,7 +133,7 @@ int main(void)
 			}
 		}
 	}
+	}
 	free(line);
 	return (status);
-	}
 }
