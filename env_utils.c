@@ -71,8 +71,8 @@ int _setenv(const char *name, const char *value)
 	if (heap_environ != NULL)
 		free(heap_environ);
 
-	environ = new_environ;
 	heap_environ = new_environ;
+	environ = new_environ;
 	return (0);
 }
 
