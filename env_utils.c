@@ -8,7 +8,11 @@
 char *_getenv(const char *name)
 {
     int i = 0;
-    size_t name_len = _strlen((char *)name);
+    size_t name_len;
+
+    if (name == NULL || name[0] == '\0')
+	    return (NULL);
+    name_len = _strlen((char *)name);
 
     while (environ[i])
     {
@@ -32,48 +36,36 @@ char *_getenv(const char *name)
 int _setenv(const char *name, const char *value)
 {
 	char *new_var, **new_environ;
-	int i = 0, j, found = -1;
-	size_t name_len = _strlen(name);
-	static char **heap_environ = NULL;
-
+	int i = 0, j;
+	
 	if (!name || !value)
 		return (-1);
-	name_len = _strlen(name);
-
-	new_var = malloc(name_len + _strlen(value) + 2);
+	
+	new_var = malloc(_strlen(name) + _strlen(value) + 2);
 	if (!new_var) return (-1);
 	_strcpy(new_var, name);
 	_strcat(new_var, "=");
 	_strcat(new_var, value);
 
-	while (environ[i])
+	for (i = 0; environ[i]; i++)
 	{
-		if (_strncmp(environ[i], name, name_len) == 0 && environ[i][name_len] == '=')
-			found = i;
-		i++;
+		if (_strncmp(environ[i], name, _strlen(name)) == 0 && environ[i][_strlen(name)] == '=')
+		{
+			environ[i] = new_var;
+			return (0);
+		}
 	}
-	new_environ = malloc(sizeof(char *) * (i + (found == -1 ? 2 : 1)));
-	if (!new_environ) { free(new_var); return (-1); }
+	
+	new_environ = malloc(sizeof(char *) * (i + 2));
+	if (!new_environ) return (free(new_var), -1);
 
 	for (j = 0; j < i; j++)
 		new_environ[j] = environ[j];
 
-	if (found != -1) 
-	{
-		new_environ[found] = new_var;
-		new_environ[i] = NULL;
-	}
-	else 
-	{
 		new_environ[i] = new_var;
 		new_environ[i + 1] = NULL;
-	}
-	if (heap_environ != NULL)
-		free(heap_environ);
-
-	heap_environ = new_environ;
-	environ = new_environ;
-	return (0);
+		environ = new_environ;
+		return (0);
 }
 
 /**
@@ -84,19 +76,19 @@ int _setenv(const char *name, const char *value)
 int _unsetenv(const char *name)
 {
     int i = 0, j;
-    size_t name_len = _strlen(name);
+    size_t name_len;
 
-    if (!name || _strchr(name, '=')) return (-1);
-
+    if (!name || *name == '\0' || _strchr(name, '='))
+	    return (-1);
+    name_len = _strlen(name);
     while (environ[i])
     {
-        if (_strncmp(environ[i], name, name_len) == 0 && environ[i][name_len] == '=')
+        if (_strncmp(environ[i], name, name_len) == 0 && 
+			environ[i][name_len] == '=')
         {
             for (j = i; environ[j]; j++)
-            {
-                environ[j] = environ[j + 1];
-            }
-            return (0);
+		    environ[j] = environ[j + 1];
+	    return (0);
         }
         i++;
     }

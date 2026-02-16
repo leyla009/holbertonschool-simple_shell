@@ -33,7 +33,9 @@ int execute_command(char **argv);
 char *find_path(char *command);
 int _setenv(const char *name, const char *value);
 int _unsetenv(const char *name);
-
+void check_ctrlc(int signo);
+char *get_username(void);
+char *get_current_directory(void);
 /* Memory Management */
 void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
 void free_argv(char **argv);
