@@ -31,7 +31,7 @@ int main(void)
 		    if (isatty(STDIN_FILENO))
 			    printf("\n");
 		    
-		    free(argv);
+		    cleanup_all(line, argv);
 		    break;
 	    }
 
