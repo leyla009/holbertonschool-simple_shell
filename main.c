@@ -40,11 +40,11 @@ int main(void)
 
 	/* Tokenization */
         i = 0;
-        token = _strtok(line, " ");
+        token = _strtok(line, " \t\n\r");
         while (token != NULL && i < 31)
         {
             argv[i++] = token;
-            token = _strtok(NULL, " ");
+            token = _strtok(NULL, " \t\n\r");
         }
         argv[i] = NULL;
 
@@ -58,7 +58,7 @@ int main(void)
         if (_strcmp(argv[0], "exit") == 0)
 		{
 			int exit_code = status;
-			
+
 			if (argv[1] != NULL)
 			{
 				for (j = 0; argv[1][j]; j++)
@@ -66,19 +66,16 @@ int main(void)
 					if (argv[1][j] < '0' || argv[1][j] > '9')
 					{
 						fprintf(stderr, "./hsh: 1: exit: Illegal number: %s\n", argv[1]);
-						exit_code = 2;
-						break;
+						status = 2;
+						goto skip_execution;
 					}
 				}
-        		if (exit_code != 2)
 				exit_code = _atoi(argv[1]);
 			}
-			
 			cleanup_all(line, argv);
-
 			exit(exit_code);
-		}	
-
+		}
+		
         /* 2. Builtin: Env */
         if (_strcmp(argv[0], "env") == 0)
         {
@@ -88,7 +85,8 @@ int main(void)
                 _putchar('\n');
 	    }
             status = 0;
-            continue;
+
+            goto skip_execution;
         }
 
         /* 3. Builtin: Setenv */
@@ -106,8 +104,7 @@ int main(void)
                 fprintf(stderr, "setenv: usage: setenv VAR VALUE\n");
                 status = 1;
             }
-	    free(argv);
-            continue;
+	    goto skip_execution;
         }
 
         /* 4. Builtin: Unsetenv */
@@ -120,7 +117,7 @@ int main(void)
                 fprintf(stderr, "unsetenv: Too few arguments\n");
                 status = 1;
             }
-            continue;
+            goto skip_execution;
         }
 
         /* 5. Execution Logic  */
@@ -138,7 +135,9 @@ int main(void)
             fprintf(stderr, "./hsh: 1: %s: not found\n", argv[0]);
             status = 127;
         }
-	free_argv(argv);
+
+    skip_execution:
+	free(argv);
     }
     free(line);
     
@@ -156,5 +155,8 @@ void cleanup_all(char *line, char **argv)
     if (line)
         free(line);
     if (env_memory_to_free)
-        free(env_memory_to_free);
+    {
+	    free(env_memory_to_free);
+	    env_memory_to_free = NULL;
+    }
 }
