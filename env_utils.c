@@ -32,17 +32,11 @@ int _setenv(const char *name, const char *value)
 {
     char *new_var;
     int i = 0;
-    size_t name_len, val_len;
-    
-    if (!name || !value || _strchr(name, '=') != NULL) 
-	    return (-1);
+    size_t name_len = _strlen(name);
+    size_t val_len = _strlen(value);
 
-    name_len = _strlen(name);
-    val_len = _strlen(value);
-    
-     new_var = malloc(name_len + val_len + 2);
-    if (!new_var) 
-	    return (-1);
+    new_var = malloc(name_len + val_len + 2);
+    if (!new_var) return (-1);
 
     _strcpy(new_var, name);
     _strcat(new_var, "=");
@@ -58,7 +52,6 @@ int _setenv(const char *name, const char *value)
         }
         i++;
     }
-    free(new_var);
     return (0);
 }
 
