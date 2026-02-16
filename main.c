@@ -83,14 +83,9 @@ int main(void)
         /* 2. Builtin: Env */
         if (_strcmp(argv[0], "env") == 0)
         {
-            for (j = 0; environ[j]; j++)
-            {
-                _puts(environ[j]);
-                _putchar('\n');
-	    }
-            status = 0;
-
-            goto skip_execution;
+		print_env();
+		status = 0;
+		goto skip_execution;
         }
 
         /* 3. Builtin: Setenv */
@@ -124,7 +119,13 @@ int main(void)
             goto skip_execution;
         }
 
-        /* 5. Execution Logic  */
+	/* 5. Builtin: CD  */
+	if (_strcmp(argv[0], "cd") == 0)
+	{
+		status = shell_cd(argv);
+		goto skip_execution;
+	}
+        /* 6. Execution Logic (External Commands)  */
         full_path = find_path(argv[0]);
         if (full_path != NULL)
         {
