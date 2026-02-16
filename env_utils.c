@@ -53,6 +53,10 @@ int _setenv(const char *name, const char *value)
 	if (!new_var)
 		return (-1);
 
+	if (env_memory_to_free != NULL)
+	{
+		free(env_memory_to_free);
+	}
 	env_memory_to_free = new_var;
 
 	_strcpy(new_var, (char *)name);
@@ -84,8 +88,8 @@ int _setenv(const char *name, const char *value)
 
 	new_environ[i] = new_var;
 	new_environ[i + 1] = NULL;
+	
 	environ = new_environ;
-
 	return (0);
 }
 
