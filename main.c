@@ -67,6 +67,26 @@ int main(void)
 				}
 				free(line);
 				exit(exit_code);
+				}
+			}
+
+			if (_strcmp(argv[0], "env") == 0)
+			{
+				int j = 0;
+				
+				if (environ == NULL || environ[0] == NULL)
+				{
+					status = 0; 
+					continue;
+				}
+				while (environ[j])
+				{
+					printf("%s\n", environ[j]);
+					j++;
+				}
+				fflush(stdout);
+			       	status = 0;
+				continue;
 			}
 
 			for (j = 0; environ[j]; j++)
@@ -79,16 +99,7 @@ int main(void)
 
 			free(line);
 			exit(exit_code);
-			if (_strcmp(argv[0], "env") == 0)
-			{
-				int j = 0;
-				while (environ && environ[j])
-				{
-					_puts(environ[j]);
-					_puts("\n");
-					j++;
-				}
-				continue;
+			
 			}
 
 			if (_strcmp(argv[0], "setenv") == 0)
