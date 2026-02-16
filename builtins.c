@@ -12,7 +12,9 @@ extern char **environ;
 int shell_cd(char **argv)
 {
     char *target = NULL, cwd[1024], *target_copy = NULL;
-    char *home = _getenv("HOME"), *oldpwd = _getenv("OLDPWD"), *pwd = _getenv("PWD");
+    char *home = _strdup(_getenv("HOME"));
+    char *oldpwd = _strdup(_getenv("OLDPWD"));
+    char *pwd = _strdup(_getenv("PWD"));
 
     if (!argv[1])
         target = home;
@@ -29,33 +31,25 @@ int shell_cd(char **argv)
         target = argv[1];
 
     if (!target)
+    {
+        free(home), free(oldpwd), free(pwd);
         return (0);
-
+    }
 
     target_copy = _strdup(target);
-    if (!target_copy)
-        return (-1);
-
-    
-    if (getcwd(cwd, sizeof(cwd)) == NULL)
+    if (getcwd(cwd, sizeof(cwd)) != NULL && target_copy != NULL)
     {
-        free(target_copy);
-        return (-1);
+        if (chdir(target_copy) != 0)
+            fprintf(stderr, "./hsh: 1: cd: can't cd to %s\n", target_copy);
+        else
+        {
+            _setenv("OLDPWD", cwd);
+            if (getcwd(cwd, sizeof(cwd)) != NULL)
+                _setenv("PWD", cwd);
+        }
     }
 
-    
-    if (chdir(target_copy) != 0)
-    {
-        fprintf(stderr, "./hsh: 1: cd: can't cd to %s\n", target_copy);
-        free(target_copy);
-        return (-1);
-    }
-
-    _setenv("OLDPWD", cwd);
-    if (getcwd(cwd, sizeof(cwd)) != NULL)
-        _setenv("PWD", cwd);
-
-    free(target_copy);
+    free(home), free(oldpwd), free(pwd), free(target_copy);
     return (0);
 }
 
