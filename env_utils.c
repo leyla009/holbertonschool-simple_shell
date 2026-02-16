@@ -1,4 +1,5 @@
 #include "main.h"
+
 char *env_memory_to_free = NULL;
 
 /**
@@ -40,7 +41,7 @@ int _setenv(const char *name, const char *value)
 {
 	char *new_var, **new_environ;
 	int i = 0, j;
-	size_t name_len;
+	size_t name_len, value_len;
 
 	if (!name || !value || _strchr(name, '=') != NULL)
 		return (-1);
