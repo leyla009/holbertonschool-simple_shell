@@ -88,7 +88,7 @@ int main(void)
 					i++;
 				}
 				status = 0;
-		i		continue;
+				continue;
 			}
 
 			if (_strcmp(argv[0], "setenv") == 0)
