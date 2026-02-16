@@ -5,6 +5,8 @@
  *
  * Return: The last exit status
  */
+extern char **environ;
+
 int main(void)
 {
 	char *line = NULL;
@@ -74,6 +76,8 @@ int main(void)
 
 			if (_strcmp(argv[0], "env") == 0)
 			{
+				printf("Debug: environ address is %p\n", (void *)environ);
+
 				for (j = 0; environ[j]; j++)
 				{
 					printf("%s\n", environ[j]);
