@@ -34,6 +34,7 @@ int _setenv(const char *name, const char *value)
 	char *new_var;
 	char **new_environ;
 	int i = 0;
+	int j;
 	size_t name_len;
 
 	if (!name || !value)
