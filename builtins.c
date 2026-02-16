@@ -21,7 +21,7 @@ int shell_cd(char **argv)
         target = home;
     else if (_strcmp(argv[1], "-") == 0)
     {
-        target = oldpwd ? oldpwd : _getenv("PWD");
+        target = oldpwd ? oldpwd : pwd;
         if (target)
         {
             _puts(target);
