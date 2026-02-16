@@ -82,12 +82,12 @@ int main(void)
 			if (_strcmp(argv[0], "env") == 0)
 			{
 				int j = 0;
-				while (environ[j])
+				while (environ && environ[j])
 				{
-					printf("%s\n", environ[j]);
+					_puts(environ[j]);
+					_puts("\n");
 					j++;
 				}
-				status = 0;
 				continue;
 			}
 
