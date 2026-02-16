@@ -30,33 +30,36 @@ char *_getenv(const char *name)
  */
 int _setenv(const char *name, const char *value)
 {
-    char *new_var;
+    char *new_var, **new_environ;;
     int i = 0;
-    size_t name_len; 
+    size_t name_len = _strlen(name); 
 
-    if (!name || !value)
-	    return(-1);
-
-    name_len = _strlen(name);
     new_var = malloc(name_len + _strlen(value) + 2);
     if (!new_var) return (-1);
+    _strcpy(new_var, name); _strcat(new_var, "="); _strcat(new_var, value);
 
-    _strcpy(new_var, name);
-    _strcat(new_var, "=");
-    _strcat(new_var, value);
-
-    while (environ[i])
+    while (environ[i]) 
     {
-        if (_strncmp(environ[i], name, name_len) == 0 && 
-			environ[i][name_len] == '=')
-        {
-            environ[i] = new_var;
-            return (0);
-        }
-        i++;
+	    if (_strncmp(environ[i], name, name_len) == 0 && environ[i][name_len] == '=') 
+	    {
+		    environ[i] = new_var;
+		    return (0);
+	    }
+	    i++;
     }
-    free(new_var);
-    return (0);
+    new_environ = malloc(sizeof(char *) * (i + 2));
+    if (!new_environ)
+    {
+	    free(new_var);
+	    return (-1);
+    }
+    for (i = 0; environ[i]; i++)
+	    new_environ[i] = environ[i];
+            new_environ[i] = new_var;
+	    new_environ[i + 1] = NULL;
+	    environ = new_environ;
+	    return (0);
+
 }
 
 /**
