@@ -1,5 +1,7 @@
 #include "main.h"
 
+extern char **environ;
+
 /**
  * shell_cd - Changes the current working directory.
  * @argv: Array of arguments (argv[0] is "cd").
@@ -37,4 +39,19 @@ int shell_cd(char **argv)
     _setenv("PWD", cwd); /* Update PWD with where we are now */
 
     return (0);
+}
+
+/**
+ * print_env - prints the environment
+ */
+void print_env(void)
+{
+    int i = 0;
+
+    while (environ[i])
+    {
+        _puts(environ[i]);
+        _putchar('\n');
+        i++;
+    }
 }
