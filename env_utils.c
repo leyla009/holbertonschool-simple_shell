@@ -53,8 +53,9 @@ int _setenv(const char *name, const char *value)
 		if (_strncmp(environ[i], name, name_len) == 0 &&
 		    environ[i][name_len] == '=')
 		{
+			char *old_ptr = environ[i];
 			environ[i] = new_var;
-			/* Note: In a real shell, you'd free the old string here */
+			free(old_ptr);
 			return (0);
 		}
 		i++;
