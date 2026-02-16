@@ -85,12 +85,6 @@ int main(void)
 				continue;
 			}
 
-			if (_strcmp(argv[0], "exit") == 0)
-			{
-				free(line);
-				exit(status);
-			}
-
 			if (_strcmp(argv[0], "setenv") == 0)
 			{
 				if (argv[1] && argv[2])
