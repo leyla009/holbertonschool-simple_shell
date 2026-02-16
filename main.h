@@ -11,8 +11,6 @@
 #include <limits.h>
 #include <fcntl.h>
 #include <errno.h>
-
-/* Environment */
 extern char **environ;
 
 /* Custom String Functions */

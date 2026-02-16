@@ -5,7 +5,6 @@
  *
  * Return: The last exit status
  */
-extern char **environ;
 
 int main(void)
 {
