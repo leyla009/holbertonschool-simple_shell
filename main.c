@@ -44,24 +44,28 @@ int main(void)
 
         /* 1. Builtin: Exit */
         if (_strcmp(argv[0], "exit") == 0)
-        {
-            int exit_code = status;
-            if (argv[1] != NULL)
-            {
-                for (j = 0; argv[1][j]; j++)
-                {
-                    if (argv[1][j] < '0' || argv[1][j] > '9')
-                    {
-                        fprintf(stderr, "./hsh: 1: exit: Illegal number: %s\n", argv[1]);
-                        free(line);
-                        exit(2);
-                    }
-                }
-                exit_code = _atoi(argv[1]);
-            }
-            free(line);
-            exit(exit_code);
-        }
+		{
+    		int exit_code = status;
+
+    		if (argv[1] != NULL)
+    		{
+        		for (j = 0; argv[1][j]; j++)
+        		{
+            		if (argv[1][j] < '0' || argv[1][j] > '9')
+            		{
+               			fprintf(stderr, "./hsh: 1: exit: Illegal number: %s\n", argv[1]);
+                		exit_code = 2;
+               			break;
+            		}
+        		}
+        		if (exit_code != 2) /* If digits were valid, convert them */
+            		exit_code = _atoi(argv[1]);
+    }
+
+    free(line); 
+    
+    exit(exit_code);
+}	
 
         /* 2. Builtin: Env */
         if (_strcmp(argv[0], "env") == 0)
