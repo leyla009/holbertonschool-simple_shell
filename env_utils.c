@@ -34,6 +34,11 @@ int _setenv(const char *name, const char *value)
 	char *new_var, **new_environ;
 	int i = 0, j, found = -1;
 	size_t name_len = _strlen(name);
+	static char **heap_environ = NULL;
+
+	if (!name || !value)
+		return (-1);
+	name_len = _strlen(name);
 
 	new_var = malloc(name_len + _strlen(value) + 2);
 	if (!new_var) return (-1);
@@ -63,8 +68,11 @@ int _setenv(const char *name, const char *value)
 		new_environ[i] = new_var;
 		new_environ[i + 1] = NULL;
 	}
+	if (heap_environ != NULL)
+		free(heap_environ);
 
 	environ = new_environ;
+	heap_environ = new_environ;
 	return (0);
 }
 
