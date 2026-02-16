@@ -17,24 +17,28 @@ int main(void)
 
     while (1)
     {
-        if (isatty(STDIN_FILENO))
-            printf(":) ");
-
-        nread = _getline(&line, &len, stdin);
-        if (nread == -1)
-        {
-            if (isatty(STDIN_FILENO))
-                printf("\n");
+	    argv = malloc(sizeof(char *) * 32);
 	    
-	    free(argv);
+	    if (argv == NULL)
+		    break;
 
-            break;
-        }
-        if (line[nread - 1] == '\n')
-            line[nread - 1] = '\0';
+	    if (isatty(STDIN_FILENO))
+            printf(":) ");
+	    
+	    nread = _getline(&line, &len, stdin);
+	    if (nread == -1)
+	    {
+		    if (isatty(STDIN_FILENO))
+			    printf("\n");
+		    
+		    free(argv);
+		    break;
+	    }
 
-	argv = malloc(sizeof(char *) * 32);
-        /* Tokenization */
+	    if (nread > 0 && line[nread - 1] == '\n')
+		    line[nread - 1] = '\0';
+
+	/* Tokenization */
         i = 0;
         token = _strtok(line, " ");
         while (token != NULL && i < 31)
