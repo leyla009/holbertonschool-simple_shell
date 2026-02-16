@@ -99,6 +99,7 @@ int main(void)
                 fprintf(stderr, "setenv: usage: setenv VAR VALUE\n");
                 status = 1;
             }
+	    free_argv(argv);
             continue;
         }
 
