@@ -32,7 +32,7 @@ int _setenv(const char *name, const char *value)
 {
     char *new_var;
     int i = 0;
-    size_t name_len val_len;
+    size_t name_len, val_len;
     
     if (!name || !value || _strchr(name, '=') != NULL) 
 	    return (-1);
