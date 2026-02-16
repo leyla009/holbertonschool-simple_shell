@@ -58,9 +58,7 @@ int _setenv(const char *name, const char *value)
         }
         i++;
     }
-    environ[i] = new_var;
-    environ[i + 1] = NULL;
-
+    free(new_var);
     return (0);
 }
 
