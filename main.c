@@ -89,11 +89,18 @@ int main(void)
 				if (argv[1] && argv[2])
 				{
 					if (_setenv(argv[1], argv[2]) == -1)
+					{
 						fprintf(stderr, "setenv: Error occurred\n");
+						status = 1;
+					}
+					else 
+						status = 0;
 				}
-				else 
+				else
+				{
 					fprintf(stderr, "setenv: Too few arguments\n");
-
+					status = 1;
+				}
 				continue; /* Return to start of loop */
 			}
 
