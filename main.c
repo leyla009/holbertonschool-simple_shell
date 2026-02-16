@@ -142,11 +142,7 @@ int main(void)
     skip_execution:
 	free(argv);
     }
-    free(line);
     
-    if (env_memory_to_free)
-	    free(env_memory_to_free);
-
     return (status);
 }
 void cleanup_all(char *line, char **argv)
