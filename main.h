@@ -1,4 +1,4 @@
-#ifndef MAIN_H
+i#ifndef MAIN_H
 #define MAIN_H
 #define BUF_SIZE 1024
 
@@ -30,6 +30,8 @@ int _atoi(char *s);
 ssize_t _getline(char **lineptr, size_t *n, FILE *stream);
 int execute_command(char **argv);
 char *find_path(char *command);
+int _setenv(const char *name, const char *value);
+int _unsetenv(const char *name);
 
 /* Memory Management */
 void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);

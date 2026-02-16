@@ -14,7 +14,6 @@ int main(void)
 	char *token;
 	int i;
 	int status = 0;
-	int j;
 
 	while (1)
 	{
@@ -85,8 +84,6 @@ int main(void)
 					if (_setenv(argv[1], argv[2]) == -1)
 						fprintf(stderr, "setenv: Error occurred\n");
 				}
-				else
-					fprintf(stderr, "setenv: Too few arguments\n");
 				continue; /* Return to start of loop */
 			}
 
@@ -97,8 +94,6 @@ int main(void)
 					if (_unsetenv(argv[1]) == -1)
 						fprintf(stderr, "unsetenv: Error occurred\n");
 				}
-				else
-					fprintf(stderr, "unsetenv: Too few arguments\n");
 				continue; /* Return to start of loop */
 			}
 
