@@ -148,13 +148,18 @@ int main(void)
 }
 void cleanup_all(char *line, char **argv)
 {
+    extern char *env_memory_to_free;
+    extern char **env_array_to_free;
+    
     if (argv)
         free(argv);
+    
     if (line)
         free(line);
+    
     if (env_memory_to_free)
-    {
 	    free(env_memory_to_free);
-	    env_memory_to_free = NULL;
-    }
+
+    if (env_array_to_free)
+	    free(env_array_to_free);
 }

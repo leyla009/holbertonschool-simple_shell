@@ -81,6 +81,13 @@ int _setenv(const char *name, const char *value)
 		return (-1);
 	}
 
+	if (env_array_to_free != NULL)
+	{
+		free(env_array_to_free);
+	}
+
+	env_array_to_free = new_environ;
+
 	for (j = 0; j < i; j++)
 	{
 		new_environ[j] = environ[j];
