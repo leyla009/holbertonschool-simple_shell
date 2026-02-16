@@ -73,6 +73,9 @@ int main(void)
 				exit_code = _atoi(argv[1]);
 			}
 			cleanup_all(line, argv);
+			
+			(void)exit_code;
+
 			exit(exit_code);
 		}
 		
