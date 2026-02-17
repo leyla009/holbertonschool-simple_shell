@@ -29,8 +29,9 @@ int shell_alias(char **argv);
 char *get_alias_value(char *name);
 void free_aliases(alias_t *head);
 
-/* --- Variable Replacement --- */
+/* --- Variable Replacement & Cleanup --- */
 void replace_variables(char **argv, int *status);
+void free_argv(char **argv); /* YENİ: Təmizlik funksiyası */
 
 /* --- Core Logic --- */
 ssize_t _getline(char **lineptr, size_t *n, int fd);

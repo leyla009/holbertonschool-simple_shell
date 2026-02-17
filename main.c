@@ -142,7 +142,6 @@ int execute_segment(char *command, int *status)
 	token = _strtok(command, " \t\n\r");
 	while (token != NULL && i < 31)
 	{
-		/* Important: We duplicate tokens to handle replacement memory safely */
 		argv[i++] = _strdup(token);
 		token = _strtok(NULL, " \t\n\r");
 	}
@@ -160,8 +159,8 @@ int execute_segment(char *command, int *status)
 	{
 		if (_strcmp(argv[0], alias_val) == 0)
 			break;
-		free(argv[0]); /* Free old */
-		argv[0] = _strdup(alias_val); /* Duplicate new */
+		free(argv[0]);
+		argv[0] = _strdup(alias_val);
 		loop_count++;
 		if (loop_count > 20)
 			break;
@@ -173,7 +172,7 @@ int execute_segment(char *command, int *status)
 	if (_strcmp(argv[0], "alias") == 0)
 	{
 		*status = shell_alias(argv);
-		for (j = 0; argv[j]; j++) free(argv[j]); free(argv);
+		free_argv(argv); /* FIXED */
 		return (0);
 	}
 	if (_strcmp(argv[0], "exit") == 0)
@@ -187,13 +186,13 @@ int execute_segment(char *command, int *status)
 				{
 					fprintf(stderr, "./hsh: 1: exit: Illegal number: %s\n", argv[1]);
 					*status = 2;
-					for (j = 0; argv[j]; j++) free(argv[j]); free(argv);
+					free_argv(argv); /* FIXED */
 					return (0);
 				}
 			}
 			exit_code = _atoi(argv[1]);
 		}
-		for (j = 0; argv[j]; j++) free(argv[j]); free(argv);
+		free_argv(argv); /* FIXED */
 		cleanup_all(NULL, NULL);
 		exit(exit_code);
 	}
@@ -201,7 +200,7 @@ int execute_segment(char *command, int *status)
 	{
 		print_env();
 		*status = 0;
-		for (j = 0; argv[j]; j++) free(argv[j]); free(argv);
+		free_argv(argv); /* FIXED */
 		return (0);
 	}
 	if (_strcmp(argv[0], "setenv") == 0)
@@ -213,7 +212,7 @@ int execute_segment(char *command, int *status)
 			fprintf(stderr, "setenv: usage: setenv VAR VALUE\n");
 			*status = 1;
 		}
-		for (j = 0; argv[j]; j++) free(argv[j]); free(argv);
+		free_argv(argv); /* FIXED */
 		return (0);
 	}
 	if (_strcmp(argv[0], "unsetenv") == 0)
@@ -225,13 +224,13 @@ int execute_segment(char *command, int *status)
 			fprintf(stderr, "unsetenv: Too few arguments\n");
 			*status = 1;
 		}
-		for (j = 0; argv[j]; j++) free(argv[j]); free(argv);
+		free_argv(argv); /* FIXED */
 		return (0);
 	}
 	if (_strcmp(argv[0], "cd") == 0)
 	{
 		*status = shell_cd(argv);
-		for (j = 0; argv[j]; j++) free(argv[j]); free(argv);
+		free_argv(argv); /* FIXED */
 		return (0);
 	}
 
@@ -248,10 +247,7 @@ int execute_segment(char *command, int *status)
 		*status = 127;
 	}
 
-	/* Cleanup duplicated argv */
-	for (j = 0; argv[j]; j++)
-		free(argv[j]);
-	free(argv);
+	free_argv(argv); /* FIXED */
 	return (0);
 }
 
