@@ -14,10 +14,14 @@ extern char **environ;
 extern char *env_memory_to_free;
 extern char **env_array_to_free;
 
+/* --- Memory Helpers --- */
+/* Bu sətir çatışmırdı: */
+void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
+void cleanup_all(char *line, char **argv);
+
 /* --- Core Logic --- */
 ssize_t _getline(char **lineptr, size_t *n, int fd);
 int execute_command(char *full_path, char **argv);
-void cleanup_all(char *line, char **argv);
 int shell_cd(char **argv);
 void process_logical(char *line, int *status);
 
@@ -30,7 +34,7 @@ void print_env(void);
 /* --- Path Finding --- */
 char *find_path(char *command);
 
-/* --- String Helpers (strings.c ilə tam eyni olmalıdır) --- */
+/* --- String Helpers --- */
 int _strlen(const char *s);
 int _strcmp(const char *s1, const char *s2);
 int _strncmp(const char *s1, const char *s2, size_t n);
