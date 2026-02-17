@@ -12,16 +12,19 @@ extern char **environ;
 int shell_cd(char **argv)
 {
     char *target = NULL, cwd[1024], *target_copy = NULL;
-    char *home = _getenv("HOME"), *oldpwd = _getenv("OLDPWD"), *pwd = _getenv("PWD");
-    char *s_home = home ? _strdup(home) : NULL;
-    char *s_oldpwd = oldpwd ? _strdup(oldpwd) : NULL;
-    char *s_pwd = pwd ? _strdup(pwd) : NULL;
+    char *home_raw = _getenv("HOME");
+    char *old_raw = _getenv("OLDPWD");
+    char *pwd_raw = _getenv("PWD");
+
+    char *home = home_raw ? _strdup(home_raw) : NULL;
+    char *oldpwd = old_raw ? _strdup(old_raw) : NULL;
+    char *pwd = pwd_raw ? _strdup(pwd_raw) : NULL;
 
     if (!argv[1])
-        target = s_home;
+        target = home;
     else if (_strcmp(argv[1], "-") == 0)
     {
-        target = s_oldpwd ? s_oldpwd : s_pwd;
+        target = oldpwd ? oldpwd : pwd;
         if (target)
         {
             _puts(target);
@@ -37,7 +40,9 @@ int shell_cd(char **argv)
     if (target_copy && getcwd(cwd, sizeof(cwd)))
     {
         if (chdir(target_copy) != 0)
+        {
             fprintf(stderr, "./hsh: 1: cd: can't cd to %s\n", target_copy);
+        }
         else
         {
             _setenv("OLDPWD", cwd);
@@ -46,13 +51,12 @@ int shell_cd(char **argv)
         }
     }
 
-    free(s_home);
-    free(s_oldpwd);
-    free(s_pwd);
+    free(home);
+    free(oldpwd);
+    free(pwd);
     free(target_copy);
     return (0);
 }
-
 /**
  * print_env - prints the environment.
  *
