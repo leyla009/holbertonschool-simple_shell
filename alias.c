@@ -27,7 +27,7 @@ int set_alias(char *name, char *value)
 	alias_t *temp = aliases;
 	alias_t *new_node;
 
-	/* Update existing alias */
+	/* 1. Əgər alias artıq varsa, dəyərini yenilə */
 	while (temp)
 	{
 		if (_strcmp(temp->name, name) == 0)
@@ -39,15 +39,30 @@ int set_alias(char *name, char *value)
 		temp = temp->next;
 	}
 
-	/* Create new alias */
+	/* 2. Yeni node yarat */
 	new_node = malloc(sizeof(alias_t));
 	if (!new_node)
 		return (1);
 
 	new_node->name = _strdup(name);
 	new_node->value = _strdup(value);
-	new_node->next = aliases;
-	aliases = new_node;
+	new_node->next = NULL; /* Sona əlavə olunacaq deyə NULL olmalıdır */
+
+	/* 3. Siyahının sonuna əlavə et (Append) */
+	if (aliases == NULL)
+	{
+		aliases = new_node;
+	}
+	else
+	{
+		temp = aliases;
+		while (temp->next != NULL)
+		{
+			temp = temp->next;
+		}
+		temp->next = new_node;
+	}
+
 	return (0);
 }
 
@@ -82,13 +97,13 @@ int shell_alias(char **argv)
 			name = argv[i];
 			value = eq_pos + 1;
 
-			/* Handle quotes 'value' or "value" */
+			/* Handle quotes */
 			if (value[0] == '\'' || value[0] == '"')
 			{
 				value++;
 				value[_strlen(value) - 1] = '\0';
 			}
-
+			
 			set_alias(name, value);
 		}
 		else
