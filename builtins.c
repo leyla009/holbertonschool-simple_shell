@@ -36,25 +36,26 @@ int shell_cd(char **argv)
     else
         target = argv[1];
 
-    if (target && (target_copy = _strdup(target)))
+    if (target)
     {
-        if (getcwd(cwd, sizeof(cwd)) != NULL)
+        target_copy = _strdup(target);
+        if (target_copy && getcwd(cwd, sizeof(cwd)))
         {
             if (chdir(target_copy) != 0)
                 fprintf(stderr, "./hsh: 1: cd: can't cd to %s\n", target_copy);
             else
             {
                 _setenv("OLDPWD", cwd);
-                if (getcwd(cwd, sizeof(cwd)) != NULL)
+                if (getcwd(cwd, sizeof(cwd)))
                     _setenv("PWD", cwd);
             }
         }
-        free(target_copy);
     }
 
     free(home);
     free(oldpwd);
     free(pwd);
+    free(target_copy);
     return (0);
 }
 
