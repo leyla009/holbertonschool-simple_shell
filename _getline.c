@@ -11,13 +11,13 @@
 ssize_t _getline(char **lineptr, size_t *n, FILE *stream)
 {
 	static char buffer[1024];
-	static size_t pos = 0;
-	static size_t n_chars = 0;
+	static int pos = 0;      /* Düzəliş: size_t əvəzinə int */
+	static int n_chars = 0;  /* Düzəliş: size_t əvəzinə int (read -1 qaytara bilər) */
 	size_t i = 0;
 	int c;
 	char *new_ptr;
 
-	(void)stream; 
+	(void)stream;
 
 	if (lineptr == NULL || n == NULL)
 		return (-1);
@@ -34,10 +34,10 @@ ssize_t _getline(char **lineptr, size_t *n, FILE *stream)
 	{
 		if (pos >= n_chars)
 		{
-			n_chars = read(0, buffer, 1024);
+			n_chars = read(STDIN_FILENO, buffer, 1024);
 			pos = 0;
-			
-			if (n_chars <= 0)
+
+			if (n_chars <= 0) /* İndi bu şərt düzgün işləyəcək */
 			{
 				if (i == 0)
 					return (-1);
