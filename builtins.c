@@ -10,39 +10,51 @@
  */
 int shell_cd(char **argv)
 {
-	char *target = NULL, cwd[1024];
-	char *h_val = _getenv("HOME");
-	char *o_val = _getenv("OLDPWD");
+	char *dir, buffer[1024];
+	int ret;
+	char *cwd;
 
-	if (getcwd(cwd, sizeof(cwd)) == NULL)
-		return (0);
+	cwd = getcwd(buffer, 1024);
+	if (!cwd)
+		return (-1);
 
-	if (!argv[1] || _strcmp(argv[1], "$HOME") == 0)
+	if (argv[1] == NULL) /* Case: cd (arqumentsiz) */
 	{
-		target = h_val;
+		dir = _getenv("HOME");
+		if (!dir)
+		{
+			/* HƏLL: Əgər HOME yoxdursa, heç nə etmə, return 0 qaytar */
+			return (0);
+		}
 	}
-	else if (_strcmp(argv[1], "-") == 0)
+	else if (_strcmp(argv[1], "-") == 0) /* Case: cd - */
 	{
-		target = o_val;
-		if (!target)
-			target = cwd;
-		_puts(target);
+		dir = _getenv("OLDPWD");
+		if (!dir)
+		{
+			_puts(cwd);
+			_putchar('\n');
+			return (0);
+		}
+		_puts(dir);
 		_putchar('\n');
 	}
-	else
+	else /* Case: cd /path */
 	{
-		target = argv[1];
+		dir = argv[1];
 	}
 
-	if (target && chdir(target) == 0)
+	ret = chdir(dir);
+
+	if (ret == -1)
 	{
-		_setenv("OLDPWD", cwd);
-		if (getcwd(cwd, sizeof(cwd)))
-			_setenv("PWD", cwd);
+		fprintf(stderr, "./hsh: 1: cd: can't cd to %s\n", argv[1]);
+		return (0);
 	}
 	else
 	{
-		fprintf(stderr, "./hsh: 1: cd: can't cd to %s\n", argv[1]);
+		_setenv("OLDPWD", cwd);
+		_setenv("PWD", getcwd(buffer, 1024));
 	}
 	return (0);
 }
