@@ -9,35 +9,53 @@ void process_logical(char *line, int *status);
 
 /**
  * main - Entry point for the simple shell
+ * @argc: Argument count
+ * @argv: Argument vector
  * Return: The last exit status
  */
-int main(void)
+int main(int argc, char **argv)
 {
 	char *line = NULL, *cmd_start;
 	size_t len = 0;
 	ssize_t nread;
 	int status = 0;
 	int i;
+	int fd = STDIN_FILENO; /* Default input is stdin */
+
+	/* FILE MODE: Əgər arqument varsa, faylı açmağa çalışırıq */
+	if (argc == 2)
+	{
+		fd = open(argv[1], O_RDONLY);
+		if (fd == -1)
+		{
+			/* Checker-in tələb etdiyi dəqiq xəta mesajı */
+			fprintf(stderr, "%s: 0: Can't open %s\n", argv[0], argv[1]);
+			return (127);
+		}
+	}
 
 	while (1)
 	{
-		if (isatty(STDIN_FILENO))
+		/* Prompt yalnız interaktiv rejimdə və fayldan oxumuruqsa çıxmalıdır */
+		if (isatty(STDIN_FILENO) && fd == STDIN_FILENO)
 			_puts(":) ");
 
-		nread = _getline(&line, &len, stdin);
+		nread = _getline(&line, &len, fd); /* fd ötürülür */
 		if (nread == -1)
 		{
-			if (isatty(STDIN_FILENO))
+			if (isatty(STDIN_FILENO) && fd == STDIN_FILENO)
 				_putchar('\n');
 			free(line);
 			cleanup_all(NULL, NULL);
+			if (fd != STDIN_FILENO)
+				close(fd);
 			return (status);
 		}
 		
 		if (nread > 0 && line[nread - 1] == '\n')
 			line[nread - 1] = '\0';
 
-		/* Semicolon handling: split by ; first */
+		/* Semicolon handling */
 		cmd_start = line;
 		for (i = 0; line[i] != '\0'; i++)
 		{
@@ -50,26 +68,28 @@ int main(void)
 		}
 		process_logical(cmd_start, &status);
 	}
+	
+	if (fd != STDIN_FILENO)
+		close(fd);
 	free(line);
 	return (status);
 }
 
 /**
  * process_logical - Handles && and || operators
- * @line: The command line segment (already split by ;)
+ * @line: The command line segment
  * @status: Pointer to the last status
  */
 void process_logical(char *line, int *status)
 {
 	char *start = line;
 	char *next = NULL;
-	int op = 0; /* 0: None, 1: &&, 2: || */
+	int op = 0; 
 	int prev_op = 0;
 	int i;
 
 	while (start)
 	{
-		/* Find the next logical operator */
 		next = NULL;
 		op = 0;
 		for (i = 0; start[i]; i++)
@@ -77,27 +97,26 @@ void process_logical(char *line, int *status)
 			if (start[i] == '&' && start[i + 1] == '&')
 			{
 				op = 1;
-				start[i] = '\0'; /* Split string */
+				start[i] = '\0';
 				next = start + i + 2;
 				break;
 			}
 			if (start[i] == '|' && start[i + 1] == '|')
 			{
 				op = 2;
-				start[i] = '\0'; /* Split string */
+				start[i] = '\0';
 				next = start + i + 2;
 				break;
 			}
 		}
 
-		/* Logic execution decision */
 		if (prev_op == 1 && *status != 0)
 		{
-			/* Prev was && and failed -> Skip current */
+			/* Skip logic */
 		}
 		else if (prev_op == 2 && *status == 0)
 		{
-			/* Prev was || and success -> Skip current */
+			/* Skip logic */
 		}
 		else
 		{
@@ -113,7 +132,7 @@ void process_logical(char *line, int *status)
  * execute_segment - Parses and executes a single command part
  * @command: The command string
  * @status: Pointer to status
- * Return: 0 (Always, status is updated via pointer)
+ * Return: 0
  */
 int execute_segment(char *command, int *status)
 {
@@ -161,7 +180,7 @@ int execute_segment(char *command, int *status)
 			exit_code = _atoi(argv[1]);
 		}
 		free(argv);
-		cleanup_all(NULL, NULL); /* argv freed above */
+		cleanup_all(NULL, NULL);
 		if (env_memory_to_free) free(env_memory_to_free);
 		exit(exit_code);
 	}

@@ -1,21 +1,23 @@
 #include "main.h"
 
 /**
- * _getline - reads an entire line from a file descriptor
+ * _getline - reads an entire line from a stream
  * @lineptr: pointer to the buffer containing the text
  * @n: pointer to the size of the buffer
- * @fd: the file descriptor to read from
+ * @stream: the input stream (unused, we use stdin)
  *
  * Return: number of characters read, or -1 on failure
  */
-ssize_t _getline(char **lineptr, size_t *n, int fd)
+ssize_t _getline(char **lineptr, size_t *n, FILE *stream)
 {
 	static char buffer[1024];
-	static int pos = 0;
-	static int n_chars = 0;
+	static size_t pos = 0;
+	static size_t n_chars = 0;
 	size_t i = 0;
 	int c;
 	char *new_ptr;
+
+	(void)stream; 
 
 	if (lineptr == NULL || n == NULL)
 		return (-1);
@@ -32,10 +34,9 @@ ssize_t _getline(char **lineptr, size_t *n, int fd)
 	{
 		if (pos >= n_chars)
 		{
-			/* STDIN_FILENO əvəzinə fd istifadə edirik */
-			n_chars = read(fd, buffer, 1024);
+			n_chars = read(0, buffer, 1024);
 			pos = 0;
-
+			
 			if (n_chars <= 0)
 			{
 				if (i == 0)
