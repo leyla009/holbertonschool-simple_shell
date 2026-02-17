@@ -7,41 +7,40 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
-#include <limits.h>
 #include <fcntl.h>
 #include <errno.h>
 
-#define BUF_SIZE 1024
-
-/* --- Global Variable Handlers --- */
 extern char **environ;
 extern char *env_memory_to_free;
 extern char **env_array_to_free;
 
-/* --- Built-in Command Logic --- */
+/* --- Core Logic --- */
+ssize_t _getline(char **lineptr, size_t *n, int fd);
+int execute_command(char *full_path, char **argv);
+void cleanup_all(char *line, char **argv);
 int shell_cd(char **argv);
-void print_env(void);
+void process_logical(char *line, int *status);
 
-/* --- Environment & Path Utilities --- */
+/* --- Environment --- */
+char *_getenv(const char *name);
 int _setenv(const char *name, const char *value);
 int _unsetenv(const char *name);
+void print_env(void);
+
+/* --- Path Finding --- */
 char *find_path(char *command);
 
-/* --- Core Execution Engine --- */
-/* Dəyişiklik: FILE *stream əvəzinə int fd */
-ssize_t _getline(char **lineptr, size_t *n, int fd);
-int execute_command(char *path, char **argv);
-
-/* --- Memory Management --- */
-void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
-void cleanup_all(char *line, char **argv);
-
-/* --- String Utilities --- */
+/* --- String Helpers (strings.c ilə tam eyni olmalıdır) --- */
 int _strlen(const char *s);
 int _strcmp(const char *s1, const char *s2);
+int _strncmp(const char *s1, const char *s2, size_t n);
+char *_strdup(const char *src);
+char *_strchr(const char *s, char c);
+char *_strcpy(char *dest, const char *src);
+char *_strcat(char *dest, const char *src);
 char *_strtok(char *str, const char *delim);
 int _atoi(char *s);
-int _putchar(char c);
 void _puts(char *str);
+int _putchar(char c);
 
-#endif /* MAIN_H */
+#endif
