@@ -43,39 +43,25 @@ int _setenv(const char *name, const char *value)
 {
 	char *new_var, **new_environ;
 	int i = 0, j;
-	size_t name_len, value_len;
+	size_t name_len = _strlen(name), value_len = _strlen(value);
 
-	if (!name || !value || _strchr(name, '=') != NULL)
-		return (-1);
-
-	name_len = _strlen(name);
-	value_len = _strlen(value);
-
-	new_var = malloc(name_len + value_len  + 2);
-	if (!new_var)
-		return (-1);
-
-	if (env_memory_to_free != NULL)
-	{
-		free(env_memory_to_free);
-	}
-	env_memory_to_free = new_var;
+	new_var = malloc(name_len + value_len + 2);
+	if (!new_var) return (-1);
 
 	_strcpy(new_var, (char *)name);
 	_strcat(new_var, "=");
 	_strcat(new_var, (char *)value);
-
+	
 	while (environ[i])
 	{
-		if (_strncmp(environ[i], name, name_len) == 0 &&
-		    environ[i][name_len] == '=')
+		if (_strncmp(environ[i], name, name_len) == 0 && environ[i][name_len] == '=')
 		{
 			environ[i] = new_var;
 			return (0);
 		}
 		i++;
 	}
-
+	
 	new_environ = malloc(sizeof(char *) * (i + 2));
 	if (!new_environ)
 	{
@@ -83,18 +69,10 @@ int _setenv(const char *name, const char *value)
 		return (-1);
 	}
 
-	if (env_array_to_free != NULL)
-	{
-		free(env_array_to_free);
-	}
-
-	env_array_to_free = new_environ;
-
+	
 	for (j = 0; j < i; j++)
-	{
 		new_environ[j] = environ[j];
-	}
-
+	
 	new_environ[i] = new_var;
 	new_environ[i + 1] = NULL;
 	
