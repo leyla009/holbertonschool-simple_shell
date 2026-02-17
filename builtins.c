@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h> 
+#include <unistd.h>
 #include "main.h"
 
 extern char **environ;
@@ -12,64 +12,43 @@ extern char **environ;
  */
 int shell_cd(char **argv)
 {
-    char *target = NULL, cwd[1024], *target_copy = NULL;
-    /* İbirincini alir */
-    char *h_val = _getenv("HOME"), *o_val = _getenv("OLDPWD"), *p_val = _getenv("PWD");
+    char *target = NULL, cwd[1024], *old_pwd = NULL;
+    char *h_val = _getenv("HOME"), *o_val = _getenv("OLDPWD");
 
-    /* 1. HOME yoxlamasi */
+    if (getcwd(cwd, sizeof(cwd)) == NULL)
+    {
+        free(h_val); free(o_val);
+        return (1);
+    }
+
     if (!argv[1] || _strcmp(argv[1], "$HOME") == 0)
         target = h_val;
-    /* 2. CD DASH yoxlamasiı (cd -) */
     else if (_strcmp(argv[1], "-") == 0)
     {
-        target = o_val ? o_val : p_val;
-        if (target)
-        {
-            _puts(target);
-            _putchar('\n');
-        }
+        if (!o_val) /* OLDPWD yoxdursa,  */
+            target = cwd;
+        else
+            target = o_val;
+        _puts(target);
+        _putchar('\n');
     }
     else
         target = argv[1];
 
-    if (target)
+    if (target && chdir(target) == 0)
     {
-        target_copy = _strdup(target);
-        if (target_copy && getcwd(cwd, sizeof(cwd)))
-        {
-            if (chdir(target_copy) == 0)
-            {
-                _setenv("OLDPWD", cwd);
-                if (getcwd(cwd, sizeof(cwd)))
-                    _setenv("PWD", cwd);
-            }
-            else
-            {
+        _setenv("OLDPWD", cwd);
+        if (getcwd(cwd, sizeof(cwd)))
+            _setenv("PWD", cwd);
+    }
+    else if (target)
+    {
 
-                fprintf(stderr, "./hsh: 1: cd: can't cd to %s\n", target);
-            }
-        }
-        free(target_copy);
+        fprintf(stderr, "./hsh: 1: cd: can't cd to %s\n", argv[1]);
     }
 
-    /*yaddasi musteqil etme */
+    if (h_val) free(h_val);
+    if (o_val) free(o_val);
 
     return (0);
-}
-
-/**
- * print_env - prints the environment.
- *
- * Return: void.
- */
-void print_env(void)
-{
-    int i = 0;
-
-    while (environ[i])
-    {
-        _puts(environ[i]);
-        _putchar('\n');
-        i++;
-    }
 }
