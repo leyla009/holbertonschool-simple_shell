@@ -58,7 +58,6 @@ int shell_cd(char **argv)
     free(target_copy);
     return (0);
 }
-
 /**
  * print_env - prints the environment.
  *
