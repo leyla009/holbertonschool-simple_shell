@@ -22,12 +22,15 @@ typedef struct alias_s
 	struct alias_s *next;
 } alias_t;
 
-extern alias_t *aliases; /* Global alias list */
+extern alias_t *aliases;
 
 /* --- Alias Functions --- */
 int shell_alias(char **argv);
 char *get_alias_value(char *name);
 void free_aliases(alias_t *head);
+
+/* --- Variable Replacement --- */
+void replace_variables(char **argv, int *status);
 
 /* --- Core Logic --- */
 ssize_t _getline(char **lineptr, size_t *n, int fd);
