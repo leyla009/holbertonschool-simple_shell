@@ -62,7 +62,6 @@ int shell_alias(char **argv)
 	char *eq_pos, *name, *value;
 	alias_t *temp;
 
-	/* If no arguments, print all aliases */
 	if (argv[1] == NULL)
 	{
 		temp = aliases;
@@ -79,20 +78,21 @@ int shell_alias(char **argv)
 		eq_pos = _strchr(argv[i], '=');
 		if (eq_pos)
 		{
-			/* Define alias: name='value' */
 			*eq_pos = '\0';
 			name = argv[i];
 			value = eq_pos + 1;
-			if (value[0] == '\'') /* Handle simple quotes if passed */
+
+			/* Handle quotes 'value' or "value" */
+			if (value[0] == '\'' || value[0] == '"')
 			{
 				value++;
 				value[_strlen(value) - 1] = '\0';
 			}
+
 			set_alias(name, value);
 		}
 		else
 		{
-			/* Print specific alias */
 			temp = aliases;
 			while (temp)
 			{

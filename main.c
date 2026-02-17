@@ -3,7 +3,7 @@
 /* --- GLOBAL VARIABLES --- */
 char *env_memory_to_free = NULL;
 char **env_array_to_free = NULL;
-alias_t *aliases = NULL; /* Alias list head */
+alias_t *aliases = NULL;
 
 void cleanup_all(char *line, char **argv);
 int execute_segment(char *command, int *status);
@@ -117,11 +117,11 @@ void process_logical(char *line, int *status)
 
 		if (prev_op == 1 && *status != 0)
 		{
-			/* Skip command */
+			/* Skip */
 		}
 		else if (prev_op == 2 && *status == 0)
 		{
-			/* Skip command */
+			/* Skip */
 		}
 		else
 		{
@@ -143,7 +143,7 @@ int execute_segment(char *command, int *status)
 {
 	char **argv;
 	char *token, *full_path = NULL, *alias_val;
-	int i, j, exit_code;
+	int i, j, exit_code, loop_count;
 
 	if (command == NULL || *command == '\0')
 		return (0);
@@ -166,13 +166,18 @@ int execute_segment(char *command, int *status)
 		return (0);
 	}
 
-	/* Check for Alias Expansion */
-	alias_val = get_alias_value(argv[0]);
-	if (alias_val != NULL)
+	/* --- ALIAS HANDLING FIX (RECURSIVE) --- */
+	loop_count = 0;
+	while ((alias_val = get_alias_value(argv[0])) != NULL)
 	{
-		/* Simple expansion: replace argv[0] */
+		if (_strcmp(argv[0], alias_val) == 0) /* Prevent self-loop */
+			break;
 		argv[0] = alias_val;
+		loop_count++;
+		if (loop_count > 20) /* Prevent infinite loop */
+			break;
 	}
+	/* -------------------------------------- */
 
 	if (_strcmp(argv[0], "alias") == 0)
 	{
@@ -256,11 +261,6 @@ int execute_segment(char *command, int *status)
 	return (0);
 }
 
-/**
- * cleanup_all - Frees all allocated memory
- * @line: Input line buffer
- * @argv: Arguments array
- */
 void cleanup_all(char *line, char **argv)
 {
 	int i;
