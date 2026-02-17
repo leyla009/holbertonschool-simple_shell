@@ -14,10 +14,20 @@ extern char **environ;
 extern char *env_memory_to_free;
 extern char **env_array_to_free;
 
-/* --- Memory Helpers --- */
-/* Bu sətir çatışmırdı: */
-void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
-void cleanup_all(char *line, char **argv);
+/* --- Alias Structure --- */
+typedef struct alias_s
+{
+	char *name;
+	char *value;
+	struct alias_s *next;
+} alias_t;
+
+extern alias_t *aliases; /* Global alias list */
+
+/* --- Alias Functions --- */
+int shell_alias(char **argv);
+char *get_alias_value(char *name);
+void free_aliases(alias_t *head);
 
 /* --- Core Logic --- */
 ssize_t _getline(char **lineptr, size_t *n, int fd);
@@ -46,5 +56,9 @@ char *_strtok(char *str, const char *delim);
 int _atoi(char *s);
 void _puts(char *str);
 int _putchar(char c);
+
+/* --- Memory Helpers --- */
+void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
+void cleanup_all(char *line, char **argv);
 
 #endif
