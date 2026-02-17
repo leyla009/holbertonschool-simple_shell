@@ -4,7 +4,8 @@ extern char *env_memory_to_free;
 extern char **env_array_to_free;
 
 void cleanup_all(char *line, char **argv);
-int process_command(char *command, int *status);
+int execute_segment(char *command, int *status);
+void process_logical(char *line, int *status);
 
 /**
  * main - Entry point for the simple shell
@@ -29,44 +30,97 @@ int main(void)
 			if (isatty(STDIN_FILENO))
 				_putchar('\n');
 			free(line);
-			cleanup_all(NULL, NULL); /* argv yoxdur */
+			cleanup_all(NULL, NULL);
 			return (status);
 		}
 		
 		if (nread > 0 && line[nread - 1] == '\n')
 			line[nread - 1] = '\0';
 
-		/* Komandaları ';' simvoluna görə bölürük */
+		/* Semicolon handling: split by ; first */
 		cmd_start = line;
 		for (i = 0; line[i] != '\0'; i++)
 		{
 			if (line[i] == ';')
 			{
-				line[i] = '\0'; /* ';' yerinə NULL qoyuruq */
-				process_command(cmd_start, &status);
-				cmd_start = &line[i + 1]; /* Növbəti komandanın başlanğıcı */
+				line[i] = '\0';
+				process_logical(cmd_start, &status);
+				cmd_start = &line[i + 1];
 			}
 		}
-		/* Sonuncu komandanı icra et */
-		process_command(cmd_start, &status);
+		process_logical(cmd_start, &status);
 	}
 	free(line);
 	return (status);
 }
 
 /**
- * process_command - Parses and executes a single command line
- * @command: The command string to execute
- * @status: Pointer to the status variable
- * Return: 0 on success
+ * process_logical - Handles && and || operators
+ * @line: The command line segment (already split by ;)
+ * @status: Pointer to the last status
  */
-int process_command(char *command, int *status)
+void process_logical(char *line, int *status)
+{
+	char *start = line;
+	char *next = NULL;
+	int op = 0; /* 0: None, 1: &&, 2: || */
+	int prev_op = 0;
+	int i;
+
+	while (start)
+	{
+		/* Find the next logical operator */
+		next = NULL;
+		op = 0;
+		for (i = 0; start[i]; i++)
+		{
+			if (start[i] == '&' && start[i + 1] == '&')
+			{
+				op = 1;
+				start[i] = '\0'; /* Split string */
+				next = start + i + 2;
+				break;
+			}
+			if (start[i] == '|' && start[i + 1] == '|')
+			{
+				op = 2;
+				start[i] = '\0'; /* Split string */
+				next = start + i + 2;
+				break;
+			}
+		}
+
+		/* Logic execution decision */
+		if (prev_op == 1 && *status != 0)
+		{
+			/* Prev was && and failed -> Skip current */
+		}
+		else if (prev_op == 2 && *status == 0)
+		{
+			/* Prev was || and success -> Skip current */
+		}
+		else
+		{
+			execute_segment(start, status);
+		}
+
+		start = next;
+		prev_op = op;
+	}
+}
+
+/**
+ * execute_segment - Parses and executes a single command part
+ * @command: The command string
+ * @status: Pointer to status
+ * Return: 0 (Always, status is updated via pointer)
+ */
+int execute_segment(char *command, int *status)
 {
 	char **argv;
 	char *token, *full_path = NULL;
 	int i, j, exit_code;
 
-	/* Boş komandaları yoxla */
 	if (command == NULL || *command == '\0')
 		return (0);
 
@@ -89,7 +143,6 @@ int process_command(char *command, int *status)
 		return (0);
 	}
 
-	/* Built-in commands */
 	if (_strcmp(argv[0], "exit") == 0)
 	{
 		exit_code = *status;
@@ -102,27 +155,16 @@ int process_command(char *command, int *status)
 					fprintf(stderr, "./hsh: 1: exit: Illegal number: %s\n", argv[1]);
 					*status = 2;
 					free(argv);
-					return (2);
+					return (0);
 				}
 			}
 			exit_code = _atoi(argv[1]);
 		}
 		free(argv);
-		/* line pointers are managed in main, but we need full cleanup before exit */
-		/* Note: We can't easily free 'line' here as it's local to main.
-		 * So we rely on OS cleanup or structured exit if possible.
-		 * For strict leak checking, exit logic should be cleaner.
-		 * But for now, let's just exit.
-		 */
-		cleanup_all(NULL, NULL); 
-		/* Note: line is freed in main, but exit stops everything. 
-		 * To be perfectly safe, we'd need to pass 'line' here too.
-		 * But simple shell often tolerates this reachable leak on exit.
-		 */
-		if (env_memory_to_free) free(env_memory_to_free); /* Double check */
+		cleanup_all(NULL, NULL); /* argv freed above */
+		if (env_memory_to_free) free(env_memory_to_free);
 		exit(exit_code);
 	}
-	
 	if (_strcmp(argv[0], "env") == 0)
 	{
 		print_env();
@@ -130,7 +172,6 @@ int process_command(char *command, int *status)
 		free(argv);
 		return (0);
 	}
-	
 	if (_strcmp(argv[0], "setenv") == 0)
 	{
 		if (argv[1] && argv[2])
@@ -151,7 +192,6 @@ int process_command(char *command, int *status)
 		free(argv);
 		return (0);
 	}
-	
 	if (_strcmp(argv[0], "unsetenv") == 0)
 	{
 		if (argv[1])
@@ -164,7 +204,6 @@ int process_command(char *command, int *status)
 		free(argv);
 		return (0);
 	}
-	
 	if (_strcmp(argv[0], "cd") == 0)
 	{
 		*status = shell_cd(argv);
@@ -172,7 +211,6 @@ int process_command(char *command, int *status)
 		return (0);
 	}
 
-	/* External commands */
 	full_path = find_path(argv[0]);
 	if (full_path != NULL)
 	{
